@@ -133,10 +133,17 @@ namespace TUtils.Messages.Core
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="busName"></param>
-		/// <param name="queueFactory"></param>
+		/// <param name="busName">
+		/// for logging purpose
+		/// </param>
 		/// <param name="cancellationToken"></param>
-		/// <param name="uniqueTimeStampCreator"></param>
+		/// <param name="queueFactory">
+		/// Used to generate the input queue of this bus. All bus stops of this bus puts their messages into this input queue.
+		/// e.g.: <code>var queueFactory = new InprocessQueueFactory(cancellationToken);</code>
+		/// </param>
+		/// <param name="uniqueTimeStampCreator">
+		/// e.g.: <code>var timeStampCreator = new UniqueTimeStampCreator();</code>
+		/// </param>
 		/// <param name="maxCountRunningTasks">
 		/// maximum wished count of messages, which are being processed.
 		/// This value has effect to method WaitForIdle() only !
@@ -288,6 +295,10 @@ namespace TUtils.Messages.Core
 			return _busName;
 		}
 
+		/// <summary>
+		/// see IMessageBusBase.WaitForIdle for further information
+		/// </summary>
+		/// <returns></returns>
 		async Task IMessageBusBase.WaitForIdle()
 		{
 			Task waitForIdle;
@@ -303,6 +314,10 @@ namespace TUtils.Messages.Core
 
 		IQueueEntry IMessageBusBase.SendPort => _inputQueue.Entry;
 
+		/// <summary>
+		/// see IMessageBusBase.Register for further information
+		/// </summary>
+		/// <returns></returns>
 		Task IMessageBus.Register(IAddress destinationAddress, Func<IAddressedMessage, Task> asyncMessageHandler)
 		{
 			long registrationId = CreateRegistrationId();

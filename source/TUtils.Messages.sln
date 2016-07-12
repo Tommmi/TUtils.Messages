@@ -9,6 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TUtils.Messages.Core", "TUt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TUtils.Messages.Core.Test", "TUtils.Messages.Core.Test\TUtils.Messages.Core.Test.csproj", "{BF96231B-17AB-4611-8016-244F13CA986A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{C8DE78CA-5CBE-4CAC-AE61-45F98B871BF9}"
+	ProjectSection(SolutionItems) = preProject
+		..\documentation\documentation-german.md = ..\documentation\documentation-german.md
+		..\documentation\history.md = ..\documentation\history.md
+		..\documentation\Messaging.xlsx = ..\documentation\Messaging.xlsx
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

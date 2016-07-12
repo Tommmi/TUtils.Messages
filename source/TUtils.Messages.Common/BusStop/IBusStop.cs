@@ -70,11 +70,8 @@ namespace TUtils.Messages.Common.BusStop
 		/// <summary>
 		/// Posts message "message" into bus.
 		/// If "message" implements interface IAddressedMessage, this method will set property message.Source automatically.
-		/// Returned task completes, if message could be inserted into send queue.
-		/// Full queues would prevent Post() to complete.
 		/// </summary>
 		/// <param name="message"></param>
-		/// <returns></returns>
 		void Post(object message);
 		Task<TMessage> WaitOnMessageToMe<TMessage>(Func<TMessage, bool> filter) where TMessage : IAddressedMessage;
 		Task<TMessage> WaitOnMessageToMe<TMessage>() where TMessage : IAddressedMessage;

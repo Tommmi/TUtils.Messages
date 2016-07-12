@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TUtils.Common.Async;
 using TUtils.Common;
 using TUtils.Common.Logging;
+using TUtils.Common.Logging.Log4Net;
 using TUtils.Common.Logging.LogMocs;
 using TUtils.Messages.Common;
 using TUtils.Messages.Common.BusStop;
@@ -102,7 +103,7 @@ namespace TUtils.Messages.Core.Test
 				var messageBus = new MessageBus("local bus", queueFactory, cancellationToken, timeStampCreator,10,logger);
 				var bus = messageBus;
 				var addressGenerator = new AddressGenerator();
-				var clientFactory =
+				var busStopFactory =
 					new BusStopFactory(
 						bus, 
 						timeStampCreator, 
@@ -112,15 +113,15 @@ namespace TUtils.Messages.Core.Test
 						time,
 						defaultTimeoutMs:20000) as IBusStopFactory;
 
-				var client1 = clientFactory.Create("A").WaitAndGetResult(cancellationToken);
-				var client2 = clientFactory.Create("B").WaitAndGetResult(cancellationToken);
+				var client1 = busStopFactory.Create("A").WaitAndGetResult(cancellationToken);
+				var client2 = busStopFactory.Create("B").WaitAndGetResult(cancellationToken);
 
 				CancellationSource = cancellationSource;
 				CancellationToken = cancellationToken;
 				QueueFactory = queueFactory;
 				MessageBus = messageBus;
 				Bus = bus;
-				StopFactory = clientFactory;
+				StopFactory = busStopFactory;
 				Client1 = client1;
 				Client2 = client2;
 			}
@@ -129,6 +130,7 @@ namespace TUtils.Messages.Core.Test
 		#endregion
 
 		#region Tests
+
 
 		#region SendMessagesStresstest
 

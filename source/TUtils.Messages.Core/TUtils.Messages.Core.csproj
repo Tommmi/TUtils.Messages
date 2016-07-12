@@ -75,6 +75,7 @@
     <Compile Include="Bus\Messages\RegisterBridgeMessage.cs" />
     <Compile Include="Bus\Messages\UnregisterBridgeMessage.cs" />
     <Compile Include="BusStop\HandlerRegistration.cs" />
+    <Compile Include="LocalBusEnvironment.cs" />
     <Compile Include="Net\ClientLoadBalancing.cs" />
     <Compile Include="Net\NoClientLoadBalancing.cs" />
     <Compile Include="Net\NetClientQueue.cs" />
