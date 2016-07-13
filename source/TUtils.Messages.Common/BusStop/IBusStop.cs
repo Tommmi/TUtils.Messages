@@ -80,6 +80,14 @@ namespace TUtils.Messages.Common.BusStop
 		IAddress BusStopAddress { get; }
 		IMessageBus MessageBus { get; }
 		IBusStopOn<TMessageType> On<TMessageType>();
+		/// <summary>
+		/// waits till message bus isn't too busy anymore.
+		/// Attention ! Be carefull to call this method.
+		/// If this method is called in a message handler, it prevents the handler to complete.
+		/// So waiting for idle status, could also prevent bus to get idle again. 
+		/// To get around with this stuff, only call it before starting new working jobs
+		/// to reduce the payload of the system. 
+		/// </summary>
 		Task WaitForIdle();
 	}
 }

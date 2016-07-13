@@ -99,7 +99,8 @@ namespace TUtils.Messages.Core
 		/// <param name="rootAssemblies">
 		/// assemblies, which contains serializable types.
 		/// Referenced assemblies will be included automatically.
-		/// If null the default is Assembly.GetEntry()
+		/// If nothing is specified the default is Assembly.GetEntry()
+		/// For Unittests use Assembly.GetAssembly(GetType())
 		/// </param>
 		public ClientStandardEnvironment(
 			ILogWriter logWriter,

@@ -143,20 +143,18 @@ namespace TUtils.Messages.Core
 						response.ContentType = "application/octet-stream";
 						response.ContentLength64 = data.LongLength;
 						response.OutputStream.Write(data, 0, data.Length);
-						response.OutputStream.Close();
 						break;
 					case ResponseEnum.AuthenticationFailed:
 						response.StatusCode = (int)HttpStatusCode.Forbidden;
-						response.OutputStream.Close();
 						break;
 					case ResponseEnum.Timeout:
 						response.StatusCode = (int)HttpStatusCode.RequestTimeout;
-						response.OutputStream.Close();
 						break;
 					default:
 						// ReSharper disable once NotResolvedInText
 						throw new ArgumentOutOfRangeException("6736543hdh234h");
 				}
+				response.OutputStream.Close();
 			}
 		}
 

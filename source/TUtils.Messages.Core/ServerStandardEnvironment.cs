@@ -27,7 +27,7 @@ namespace TUtils.Messages.Core
 	{
 		public IBusStop BusStop { get; }
 		public IMessageBus Bus { get; }
-		public TLog Logger { get; }
+		public ITLog Logger { get; }
 
 		public INetServer NetServer { get; }
 
