@@ -14,7 +14,7 @@ namespace TUtils.Messages.Core.BusStop
 		private readonly IMessageBus _bus;
 		private readonly BusStop _busStop;
 		private readonly CancellationToken _cancellationToken;
-		private bool _includingBroadcastMessages;
+		private bool _includingMessagesToOtherBusStops;
 
 		public BusStopOn(IMessageBus bus, BusStop busStop, CancellationToken cancellationToken)
 		{
@@ -25,9 +25,9 @@ namespace TUtils.Messages.Core.BusStop
 
 		IHandlerRegistration IBusStopOn<TMessageType>.Do(Func<TMessageType, CancellationToken, Task> handler)
 		{
-			var registration = new HandlerRegistration<TMessageType>(Filter, _bus, handler, _busStop, _cancellationToken, _includingBroadcastMessages);
+			var registration = new HandlerRegistration<TMessageType>(Filter, _bus, handler, _busStop, _cancellationToken, _includingMessagesToOtherBusStops);
 
-			if (_includingBroadcastMessages)
+			if (_includingMessagesToOtherBusStops)
 				_bus.Register<TMessageType>(registration.OnMessage);
 			else
 				_busStop.RegisterHandlerInternal(registration.OnMessage);
@@ -40,9 +40,9 @@ namespace TUtils.Messages.Core.BusStop
 			return _filters.All(filter => filter(message));
 		}
 
-		IBusStopOn<TMessageType> IBusStopOn<TMessageType>.IncludingBroadcastMessages()
+		IBusStopOn<TMessageType> IBusStopOn<TMessageType>.IncludingMessagesToOtherBusStops()
 		{
-			_includingBroadcastMessages = true;
+			_includingMessagesToOtherBusStops = true;
 			return this;
 		}
 

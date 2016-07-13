@@ -42,7 +42,12 @@ Unabhängig von diesen Überlegungen bleibt aber das Hauptziel von `TUtils.Message
 ### Einbindung
 - aktuelle Version [herunterladen](https://github.com/Tommmi/TUtils.Messages/archive/master.zip).
 - entpacken
-- Assemblies {repository}\lib\\*.dll in das eigene Projekt einbinden
+- Folgende Assemblies in das eigene Projekt einbinden
+    - `{repository}\lib\TUtils.Common.dll`
+    - `{repository}\lib\TUtils.Messages.Common.dll`
+    - `{repository}\lib\TUtils.Messages.Core.dll`
+    - `{repository}\lib\NetSerializer.dll` (third party [library](https://github.com/tomba/netserializer))
+
 
 ### Lokalen Bus erzeugen
 Die einfachste Möglichkeit, einen lokalen Messagebus zu erzeugen, der Messages innerhalb eines Prozesses transportiert, ist folgende:
@@ -71,6 +76,7 @@ Hiervon gibt es zwei:
 
 Um einen lokalen Bus zu erzeugen, muss man also die Klasse `MessageBus` instantiieren, deren Konstruktor eine Reihe von DependencyInjection-Parametern verlangt. Instantiieren Sie `MessageBus` manuell, um das Standardverhalten detailliert zu beeinflussen.
 
+> Die MessageBus-Implementation `MessageBus` führt aus Performancegründen keine Serialisierung oder Deserialisierung der Messages aus. Die übergebenen Message-Objekte werden also als Referenz direkt weitergegeben. Ein Empfänger einer Message sollte deshalb nie die erhaltene Message modifizieren.
 
 ### Messages senden
 Zwar liefert ein Bus (`IMessageBus`) bereits eine Möglichkeit, Messages zu senden 
@@ -78,7 +84,9 @@ Zwar liefert ein Bus (`IMessageBus`) bereits eine Möglichkeit, Messages zu sende
 await simpleMessageEnvironment.Bus.SendPort.Enqueue(new MyMessage());
 ```
 dennoch wird empfohlen, nur über einen Busstop auf den Bus zuzugreifen. Ein Busstop ist eine Klasse, die das Interface `IBusStop` implementiert. 
-Ein BusStop verfügt über eine eigene globale Adresse, die in Messages mitangegeben werden kann. Messages, die das Interface `IAddressedMessage` implementieren, verfügen über eine Zieladresse. Messages, die das Interface `IRequestMessage` implementieren, verfügen außerdem über eine Quelladresse, die vom BusStop beim Senden automatisch gesetzt wird. **Wichtig**: In einem Bus bestimmen nicht die Sender einer Message, wer die Message erhält. Stattdessen registrieren sich die Empfänger für bestimmte Messages. So kann man sich in einem BusStop für Messages registrieren, die die gleiche Zieladresse haben, wie der BusStop. Es ist aber auch möglich, jede beliebige andere Message zu erhalten, wenn man will.
+Ein BusStop verfügt über eine eigene globale Adresse, die in Messages mitangegeben werden kann. Messages, die das Interface `IAddressedMessage` implementieren, verfügen über eine Zieladresse. Messages, die das Interface `IRequestMessage` implementieren, verfügen außerdem über eine Quelladresse, die vom BusStop beim Senden automatisch gesetzt wird. 
+> In einem Bus bestimmen nicht die Sender einer Message, wer die Message erhält. Stattdessen registrieren sich die Empfänger für bestimmte Messages. So kann man sich in einem BusStop für Messages registrieren, die die gleiche Zieladresse haben,
+wie der BusStop. Es ist aber auch möglich, jede beliebige andere Message zu erhalten, wenn man will.
 
 `LocalBusEnvironment` definiert bereits einen Default-Busstop:
 ``` CSharp
@@ -153,6 +161,139 @@ Task<TimeoutResult<TResponse>> SendWithTimeout<TRequest, TResponse>(TRequest req
 	where TRequest : IRequestMessage
 	where TResponse : IResponseMessage;
 ```
+
+### **Messages empfangen**
+Grundsätzlich gibt es zwei Möglichkeiten, Messages zu empfangen:
+#### 1. Messagehandler registrieren
+Man registriert einen Delegate, der bei Empfang einer bestimmten Message automatisch aufgerufen wird  
+
+**IBusStop.On<{MessageType}>( )**  
+``` CSharp
+async void Test()
+{
+    var logger = new Log4NetWriter();
+    _env = new LocalBusEnvironment(logger);
+    _env.BusStop
+    	.On<MyRequestMessage>()
+    	.Do(OnMyRequestMessage);
+}
+
+async Task OnMyRequestMessage(MyRequestMessage myRequestMessage, CancellationToken cancellationToken)
+{
+	// dosth ...
+	// cancellationToken.ThrowIfCancellationRequested();
+
+	// post response
+	_env.BusStop.Post(new MyResponseMessage(priority:1,requestMessage:myRequestMessage));
+}
+```
+
+**.FilteredBy( )**  
+Nur auf Messages reagieren, für die ein bestimmtes Filterkriterium passt.
+``` CSharp
+_env.BusStop
+	.On<MyRequestMessage>()
+	.FilteredBy(msg => _allowedSources.Contains(msg.Source))
+	.Do(OnMyRequestMessage);
+```
+
+**.IncludingMessagesToOtherBusStops( )**  
+Auch auf Messages reagieren, die nicht an die Addresse des BusStops gesendet wurden.
+``` CSharp
+_env.BusStop
+	.On<MyRequestMessage>()
+	.IncludingMessagesToOtherBusStops()
+	.Do(OnMyRequestMessage);
+```
+``` CSharp
+_env.BusStop
+	.On<MyRequestMessage>()
+	.IncludingMessagesToOtherBusStops()
+	.FilteredBy(msg => _allowedSources.Contains(msg.Source))
+	.Do(OnMyRequestMessage);
+```
+
+
+
+#### 2. Await
+Man wartet im aktuellen Codefluss asynchron auf den Empfang der Message
+
+**Send( )**  
+Eine Message vom Typ IRequestMessage senden und auf den Empfang der zugehörigen ResponseMessage warten, die an die Adresse dieses BusStops gesendet wurde.
+``` CSharp
+async void Test()
+{
+    var request = new MyRequestMessage(priority: 1, destination: _myService);
+    var response = await _env.BusStop.Send<MyRequestMessage,MyResponseMessage>(request);
+}
+
+private class MyRequestMessage : IPrioMessage, IRequestMessage
+{
+	public MyRequestMessage(byte priority, IAddress destination)
+	{
+		Priority = priority;
+		Destination = destination;
+	}
+
+	public byte Priority { get; }
+	public IAddress Destination { get; }
+	// will be set automatically
+	public IAddress Source { get; set; }
+	// will be set automatically by Send() method
+	public long RequestId { get; set; }
+}
+
+private class MyResponseMessage : IPrioMessage, IResponseMessage
+{
+	public MyResponseMessage(byte priority, IAddress destination, long requestId)
+	{
+		Priority = priority;
+		Destination = destination;
+		RequestId = requestId;
+	}
+
+	public MyResponseMessage(byte priority, MyRequestMessage requestMessage)
+		: this(priority, requestMessage.Source, requestMessage.RequestId)
+	{
+	}
+
+	public byte Priority { get; }
+	public IAddress Destination { get; }
+	// will be set automatically
+	public IAddress Source { get; set; }
+	public long RequestId { get; set; }
+}
+```
+
+**SendWithTimeout( )**  
+Verwendet den Default-Timeout, der in LocalBusEnvironment gesetzt wurde (20 Sekunden).
+``` CSharp
+var timeOutResult = await _env.BusStop.SendWithTimeout<MyRequestMessage, MyResponseMessage>(request);
+if (!timeOutResult.TimeoutElapsed)
+{
+	response = timeOutResult.Value;
+}
+```
+**WaitOnMessageToMe( )**  
+Allgemein auf eine Message warten, die an die Adresse des BusStops gesendet wurde.
+``` CSharp
+var request = new MyRequestMessage(priority: 1, destination: _myService);
+request.RequestId = 5672374;
+_env.BusStop.Post(request);
+response = await _env.BusStop.WaitOnMessageToMe<MyResponseMessage>(msg => msg.RequestId == request.RequestId);
+```
+``` CSharp
+var timeOutResult = await _env.BusStop.WaitOnMessageToMe<MyResponseMessage>(
+	timeoutMs:2000,
+	filter:msg => msg.RequestId == request.RequestId && _allowedSources.Contains(msg.Source));
+if (!timeOutResult.TimeoutElapsed)
+{
+	response = timeOutResult.Value;
+}
+```
+
+
+
 
 
 

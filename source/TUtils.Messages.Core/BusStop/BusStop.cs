@@ -212,17 +212,9 @@ namespace TUtils.Messages.Core.BusStop
 
 		void IBusStop.Post(object message)
 		{
-			var requestMessage = message as IRequestMessage;
-			if (requestMessage != null)
-			{
-				FillRequestIdAndSource(requestMessage);
-			}
-			else
-			{
-				var addressedMessage = message as IAddressedMessage;
-				if (addressedMessage != null)
-					addressedMessage.Source = _address;
-			}
+			var addressedMessage = message as IAddressedMessage;
+			if (addressedMessage != null)
+				addressedMessage.Source = _address;
 
 #pragma warning disable 4014
 			_bus.SendPort.Enqueue(message);

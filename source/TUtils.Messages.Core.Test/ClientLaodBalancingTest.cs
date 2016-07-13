@@ -49,7 +49,7 @@ namespace TUtils.Messages.Core.Test
 
 			env.BusStop
 				.On<TestMessage>()
-				.IncludingBroadcastMessages()
+				.IncludingMessagesToOtherBusStops()
 				.Do((msg, cancel) =>
 				{
 					if (msg.Value.EndsWith("1"))

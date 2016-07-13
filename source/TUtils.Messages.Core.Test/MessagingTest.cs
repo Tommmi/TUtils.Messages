@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -204,7 +205,7 @@ namespace TUtils.Messages.Core.Test
 
 			env.Client1
 				.On<HelloBroadcastMessage>()
-				.IncludingBroadcastMessages()
+				.IncludingMessagesToOtherBusStops()
 				.FilteredBy(msg => msg.MyFeatures == "hello ! This is client B")
 				.Do(async (msg, cancellationToken) =>
 				{
@@ -218,7 +219,7 @@ namespace TUtils.Messages.Core.Test
 
 			env.Client2
 				.On<HelloBroadcastMessage>()
-				.IncludingBroadcastMessages()
+				.IncludingMessagesToOtherBusStops()
 				.Do(async (msg, cancellationToken) =>
 				{
 					if (msg.MyFeatures == "hello ! This is client A")

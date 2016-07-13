@@ -126,7 +126,7 @@ namespace TUtils.Messages.Core.Test
 
 			client0_1
 				.On<SimpleRequestMessage>()
-				.IncludingBroadcastMessages()
+				.IncludingMessagesToOtherBusStops()
 				.Do((message, cancellationToken) =>
 				{
 					var respMsg = new SimpleResponseMessage(message, "not allowed");
@@ -162,7 +162,7 @@ namespace TUtils.Messages.Core.Test
 
 			client0_1
 				.On<SimpleRequestMessage>()
-				.IncludingBroadcastMessages()
+				.IncludingMessagesToOtherBusStops()
 				.Do((message, cancellationToken) =>
 				{
 					var respMsg = new SimpleResponseMessage(message, "not allowed");
@@ -206,7 +206,7 @@ namespace TUtils.Messages.Core.Test
 
 			client0_5
 				.On<SimpleRequestMessage>()
-				.IncludingBroadcastMessages()
+				.IncludingMessagesToOtherBusStops()
 				.Do((message, cancellationToken) =>
 				{
 					var respMsg = new SimpleResponseMessage(message, "not allowed");
