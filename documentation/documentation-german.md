@@ -108,6 +108,11 @@ Zieladresse haben, wie der BusStop. Es ist aber auch möglich, jede beliebige and
 ``` CSharp
 IBusStop LocalBusEnvironment.BusStop { get; }
 ```
+Sie können aber aber auch einen neuen BusStop erzeugen:
+``` CSharp
+Task<IBusStop> LocalBusEnvironment.AddNewBusStop(string busStopName)
+```
+
 Für das Senden einer Message sind folgende Methoden in einem BusStop vorgesehen:
 ``` CSharp
 /// <summary>

@@ -100,10 +100,16 @@ which is automatically set by BusStop when sending a message.
 the receiver determines which messages it receives. So you can register in a BusStop for messages, 
 which have the same destination address as the BusStop. But it is also possible to obtain any other message, if you want.
 
-`Local Bus Environment` already defines a default BusStop:
+`LocalBusEnvironment` already defines a default BusStop:
 ``` CSharp
 IBusStop LocalBusEnvironment.BusStop { get; }
 ```
+But you may add new bus stops if you want:
+``` CSharp
+Task<IBusStop> LocalBusEnvironment.AddNewBusStop(string busStopName)
+```
+
+
 The following methods are provided in a BusStop for sending a message:
 ``` CSharp
 /// <summary>

@@ -38,13 +38,20 @@ namespace TUtils.Messages.Core
 		public string ClientUri { get; }
 		public IBusStop BusStop { get; }
 		public IMessageBus Bus { get; }
+		public IBusStopFactory BusStopFactory { get; }
 		public ITLog Logger { get; }
 		public IQueueFactory QueueFactory { get; }
 		public CancellationToken CancellationToken { get; }
 		public CancellationTokenSource CancelSource { get; }
 		public IMessageSerializer Serializer { get; }
 		public ISystemTimeProvider SystemTime { get; }
+		public IUniqueTimeStampCreator UniqueTimeStampCreator { get; }
 		public Bridge Bridge { get; }
+
+		public Task<IBusStop> AddNewBusStop(string busStopName)
+		{
+			return BusStopFactory.Create(busStopName);
+		}
 
 		public async Task<IMessageBusBase> ConnectToServer(Uri serverAddress)
 		{
@@ -115,6 +122,7 @@ namespace TUtils.Messages.Core
 			CancelSource = localBusEnvironment.CancelSource;
 			CancellationToken = CancelSource.Token;
 			QueueFactory = localBusEnvironment.InprocessQueueFactory;
+			BusStopFactory = localBusEnvironment.BusStopFactory;
 			UniqueTimeStampCreator = localBusEnvironment.UniqueTimeStampCreator;
 			Logger = localBusEnvironment.Logger;
 			SystemTime = localBusEnvironment.SystemTime;
@@ -132,8 +140,6 @@ namespace TUtils.Messages.Core
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 			_netClientFactory = new NetClientFactory(clientUri, CancellationToken, Logger, additionalConfiguration);
 		}
-
-		public IUniqueTimeStampCreator UniqueTimeStampCreator { get; set; }
 
 		#endregion
 	}
