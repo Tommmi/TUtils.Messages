@@ -21,15 +21,15 @@ it has placed great emphasis on the potentiality to write fluent code by using t
 `TUtils.Messages` is data-bus-oriented: All communication modules will be registered at a bus and can send and receive messages.
 
 ## What is `TUtils.Messages` for ?
-- `TUtils.Messages` enables message-based communication. Therefore, the main feature is the communication
+- `TUtils.Messages` enables message-based communication. Therefore, the **main feature** is the communication
 between simultaneously running processes, tasks and threads.
 - `TUtils.Messages` enables virtualization of the communication infrastructure. Therefore, automated component or system tests 
 can be easily developed in a way that they can run independently of the network infrastructure.
-- *Pure academic considerations:* Basically the virtual bus is not client-server-oriented.
+- *(Pure academic considerations:)* Basically the virtual bus is not client-server-oriented.
 Therefore (considered from application logic perspective) the role of the server is omitted. 
 Although participants can take the role of a service, the role of a central server isn't mandatory anymore. 
 Therefore it's possible to operate an application that uses a global communication network without the need of 
-programming and maintaining a central application server. How can that be ? From a technical perspective you do need 
+programming and maintaining a central application server. How can that be? From a technical perspective you do need 
 a server to use the Internet as a transport layer, because underlying communication technology is client-server-based. 
 But this server needn't necessarily be specific to the application, but must simply provide a global bus to the application.
 An applying for such a scenario could be (for example) an company-internal ad-hoc ongoing team application, 
@@ -277,11 +277,11 @@ private class MyResponseMessage : IPrioMessage, IResponseMessage
 }
 ```
 > **IPrioMessage**  
-Messages, die `IPrioMessage` implementieren, werden gemäß der gesetzten Priorität gegenüber anderen Messages bevorzugt 
-oder benachteiligt. Eine Message ohne implementiertes Interface `IPrioMessage` verwendet implizit die Priorität **200**.
+Messages implementing interface `IPrioMessage` will be prefered or disadvantaged according to their priority. 
+A message without implementing interface `IPrioMessage` implicitly uses the priority **200**.
 
 **SendWithTimeout( )**  
-Verwendet den Default-Timeout, der in LocalBusEnvironment gesetzt wurde (20 Sekunden).
+Uses the default timeout that was set in `LocalBusEnvironment` (20 seconds).
 ``` CSharp
 var timeOutResult = await _env.BusStop.SendWithTimeout<MyRequestMessage, MyResponseMessage>(request);
 if (!timeOutResult.TimeoutElapsed)
@@ -290,14 +290,14 @@ if (!timeOutResult.TimeoutElapsed)
 }
 ```
 **WaitOnMessageToMe( )**  
-Allgemein auf eine Message warten, die an die Adresse des BusStops gesendet wurde.
+Waiting for a message that has been sent to the address of the BusStop.
 ``` CSharp
 var request = new MyRequestMessage(priority: 1, destination: _myService);
 request.RequestId = 5672374;
 _env.BusStop.Post(request);
 response = await _env.BusStop.WaitOnMessageToMe<MyResponseMessage>(msg => msg.RequestId == request.RequestId);
 ```
-oder
+or
 ``` CSharp
 var timeOutResult = await _env.BusStop.WaitOnMessageToMe<MyResponseMessage>(
 	timeoutMs:2000,
@@ -309,32 +309,32 @@ if (!timeOutResult.TimeoutElapsed)
 ```
 
 ### WaitForIdle()
-Eine der am schwierigsten zu analysierenden Probleme mehrläufiger Systeme ist, dass einzelne Services überlastet 
-werden können und die Aufgabenlast immer weiter wächst, aber nicht schnell genug abgearbeitet werden kann. 
-Das äußerst sich darin, dass Queues immer weiter anwachsen. Weil nicht überlastete Komponenten/Abläufe nicht wissen, 
-dass es einzelne andere überlastete Teilsysteme gibt, stellen sie immer weitere Aufgaben an das System und überlasten 
-es dadurch nur um so mehr. Das ist eine Problemkategorie, die singlethreaded Programme mit synchroner innerer 
-Kommunikation praktisch nicht kennen. Eine sehr gute Lösung hierfür ist, die meisten Messages als Request/Response-Paare 
-zu gestalten und immer auf die Beendigung der fernen Message-Verarbeitung zu warten. Eine solche Vorgehensweise macht 
-allerdings zum Teil die Vorteile einer massiv parallelen Verarbeitung zunichte. Eine andere Möglichkeit ist, Messages, 
-deren Verarbeitung verzögert werden darf und langwierige Verarbeitungen anstoßen, niedrig zu priorisieren (`IPrioMessage`).
-Eine dritte interessante Lösung, die in diesem Framwork angeboten wird, ist der Aufruf der Methode 
+One of the most difficult problems to be analyzed in multi-task systems is, that individual services can be overloaded
+and the task load continues to grow. This manifests itself in the fact that queues always continue to grow. 
+Because non-overloaded sub-systems don't know that there are some other overloaded subsystems, 
+they create more and more requests to the system and overload thereby the system all the more. 
+This is a problem category, which is practically unknown in single-threaded programs with synchronous internal communication. 
+A very good solution for this is to design most messages as request / response pairs
+and to wait always for the completion of the remote message processing. Such a procedure, however, 
+slows down working performance and partially shoots down the benefits of massively parallel processing. 
+Another possibility is, to lower prioritize messages of long-during tasks and to delayed their processing (`IPrioMessage`).
+A third interesting solution, which is offered in this framework, is the following method call:
 ``` CSharp
 Task IBusStop.WaitForIdle()
 ```
-WaitForIdle liefert einen Task zurück, der erst completed, wenn im Bus nicht mehr als 5 Messages gerade von einem 
-Handler verarbeitet werden. Die Grenze für die Messageanzahl ist bei der Initialisierung des Busses definierbar, 
-LocalBusEnvironment definiert 5 als Default.
+WaitForIdle returns a task, which only completes when the bus has no more than 5 messages processing currently. 
+The limit for the message number can be defined during the initialization of the MessageBus.
+`LocalBusEnvironment` defines 5 as default.
 
-### Einen globalen Bus erzeugen
-Bisher wurden nur Szenarien erörtert, bei dem Messages innerhalb ein und deselben Prozesses gesendet wurden.
-Um die Prozessgrenzen zu verlassen, muss man lokale Busse verschiedener Prozesse oder Maschinen miteinander zu einem
-gemeinsammen Bus verbinden.
-Die einfachste Möglichkeit hierzu ist, die fertigen Konfigurationen 
-`ClientStandardEnvironment` und `ServerStandardEnvironment` zu verwenden. `ClientStandardEnvironment` verwendet man für
-Betriebssystemprozesse, die netzwerktechnisch als Client arbeiten, `ServerStandardEnvironment` verwendet man für den
-Betriebssystemprozess, der netzwerktechnisch als zentraler Server arbeitet. `LocalBusEnvironment` wird gar nicht mehr
-verwendet.
+### Creating a global bus
+So far, only scenarios were discussed, where messages were sent within a single process.
+To leave the process boundaries, local buses of the various processes or machines have to be connected with each 
+other to one single global bus. The easiest way to do this is to use the ready-to-use configurations
+`ClientStandardEnvironment` and `ServerStandardEnvironment`. Use `ClientStandardEnvironment` for
+operating system processes which operate in networks as a client. Use `ServerStandardEnvironment` for
+operating system processes which operate in networks as a central server. `LocalBusEnvironment` is no longer
+used.
+
 #### Client-PC
 ``` CSharp
 var logger = new Log4NetWriter();
@@ -346,10 +346,11 @@ var envClient = new ClientStandardEnvironment(
 var defaultBustStop = envClient.BusStop;
 ```
 
-> Alle Messages, die über das Netzwerk transportiert werden, müssen serialisierbar sein. Darum müssen alle  Message-Klassendefinitionen das Attribut **[Serializable]** aufweisen ! Sie dürfen **nicht** das Interface ISerializable
-aufweisen ! Wenn sich nicht alle verwendeten Messages in Assembly.GetEntry() oder einem Sub-Assembly befinden (z.B. in
-Unittests ist das der Fall), muss man die Assemblies bei der Initialisierung manuell hinzufügen (siehe Konstruktor
-ClientStandardEnvironment(..)). 
+> All messages that are being transported over the network must be serializable. 
+Therefore all message class definitions must have the attribute **[Serializable]**! 
+Do **not** use the interface `ISerializable`! If there are message classes, which aren't defined in the entry assembly (`Assembly.GetEntry()`) 
+or in one of its sub-assemblies (as in unit testing is the case), you have to manually add the assemblies 
+during initialization (see constructor of `ClientStandardEnvironment').
 
 #### Server
 ``` CSharp
