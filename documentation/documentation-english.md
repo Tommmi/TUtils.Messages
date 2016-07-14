@@ -6,10 +6,11 @@ don't know anything about the location or the technology used for the communicat
 For all of the participating communication components it looks as if they all are attached to a virtual data bus,
 regardless of whether the sub-components are running in the same thread, in the same process,
 run on the same machine or on different servers or different clients.
-Everyone can communicate with each other as long as they are attached to the same bus. When configuring the
-specific communication infrastructure basically there may be used different technologies:
-Inprocess Queuing, HTTP, IP, narrow band radio, SMS, Email, Windows sockets, shared memory, WebDAV.
-All that is basically suitable to carry data and to transmit signals, could be used (as long as there exists an implemention for that technology or medium).
+Everyone can communicate with each other as long as they are attached to the same bus. While configuring the
+specific communication infrastructure there may appear different technologies:
+inprocess queuing, HTTP, IP, narrow band radio, SMS, Email, Windows sockets, shared memory, WebDAV.
+All that is basically suitable to carry data and to transmit signals, could be used 
+(as long as there exists an implemention for that technology or medium).
 
 `TUtils.Messages` currently only has implementations for .NET, HTTP and inprocess queueing. An implementation for 
 JavaScript is currently in progress.
@@ -32,7 +33,7 @@ Therefore it's possible to operate an application that uses a global communicati
 programming and maintaining a central application server. How can that be? From a technical perspective you do need 
 a server to use the Internet as a transport layer, because underlying communication technology is client-server-based. 
 But this server needn't necessarily be specific to the application, but must simply provide a global bus to the application.
-An applying for such a scenario could be (for example) an company-internal ad-hoc ongoing team application, 
+An applying for such a scenario could be (for example) a company-internal ad-hoc ongoing team application, 
 without the need of installing a server by a network administrator.
 Since the technology does not matter, the application can also work as a JavaScript program in a browser.
 Unlike a web application of a web service provider, the data needn't be hosted by a third party.
@@ -44,7 +45,7 @@ between simultaneously running operations.
 - .NET 4.6.1
 - (other platforms particular JavaScript are in process)
 
-### Einbindung
+### Installation
 - [Download](https://github.com/Tommmi/TUtils.Messages/archive/master.zip) current version .
 - unpack
 - Bind following assemblies into your own project:
@@ -54,15 +55,15 @@ between simultaneously running operations.
     - `{repository}\lib\NetSerializer.dll` (third party [library](https://github.com/tomba/netserializer))
 
 
-### Create Local Bus
-The simplest way to generate a local messagebus, which transports messages within a process, is the following:
+### Create A Local Bus
+The simplest way to generate a local message bus, which transports messages within a process, is the following:
 
 ``` CSharp
 var logger = new Log4NetWriter();
 var simpleMessageEnvironment = new LocalBusEnvironment(logger);
 ```
 
-Of course you can also use other logger:
+Of course you can also use another logger:
 ``` CSharp
 // usefull in Unittests:
 var logger = new LogConsoleWriter(
