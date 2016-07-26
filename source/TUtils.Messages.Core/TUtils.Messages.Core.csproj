@@ -105,7 +105,6 @@
     <Compile Include="Bridge.cs" />
     <Compile Include="ServerStandardEnvironment.cs" />
     <Compile Include="SimpleHttpServer.cs" />
-    <Compile Include="UniqueTimeStampCreator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TUtils.Messages.Common\TUtils.Messages.Common.csproj">
