@@ -38,7 +38,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="TUtils.Common">
-      <HintPath>..\packages\TUtils.Common\TUtils.Common.dll</HintPath>
+      <HintPath>..\external\TUtils.Common\TUtils.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

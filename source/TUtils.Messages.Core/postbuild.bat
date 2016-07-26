@@ -8,5 +8,5 @@
 :: copy output to ..\..\lib
 ::**********************************************************
 copy "%1bin\%2\%3" "%1..\..\lib\%3"
-copy "%1..\packages\NetSerializer\NetSerializer\bin\Debug\*.dll" "%1..\..\lib\*.dll"
+copy "%1..\external\NetSerializer\NetSerializer\bin\Debug\*.dll" "%1..\..\lib\*.dll"
 
