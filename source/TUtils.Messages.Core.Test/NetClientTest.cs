@@ -77,17 +77,17 @@ namespace TUtils.Messages.Core.Test
 		[TestMethod]
 		public async Task TestNetClient2()
 		{
-			var logImpl = new LogConsoleWriter(
+			var logWriter = new LogConsoleWriter(
 				LogSeverityEnum.ERROR,
 				namespacesWhiteList: new List<string> { "*" },
 				namespacesBlackList: new List<string>());
 			var rootAssembly = Assembly.GetAssembly(GetType());
-			var envServer = new ServerStandardEnvironment(logImpl, rootAssembly);
+			var envServer = new ServerStandardEnvironment(logWriter, timeoutForLongPollingRequest:2000, rootAssemblies:rootAssembly);
 			var envClient = new ClientStandardEnvironment(
-				logImpl,
+				logWriter,
 				clientUri: "Thomas",
 				additionalConfiguration: null,
-				requestRetryIntervallTimeMs: 30 * 1000,
+				diconnectedRetryIntervallTimeMs: 30 * 1000,
 				rootAssemblies: rootAssembly);
 
 			try

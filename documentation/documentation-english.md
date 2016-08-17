@@ -349,7 +349,7 @@ var envClient = new ClientStandardEnvironment(
 	logWriter:logger,
 	clientUri: "fooBarClient", // any unique string
 	additionalConfiguration: null,
-	requestRetryIntervallTimeMs: 30 * 1000);
+	diconnectedRetryIntervallTimeMs: 30 * 1000);
 var defaultBustStop = envClient.BusStop;
 ```
 
@@ -362,7 +362,7 @@ during initialization (see constructor of `ClientStandardEnvironment').
 #### Server
 ``` CSharp
 var logger = new Log4NetWriter();
-var envServer = new ServerStandardEnvironment(logger);
+var envServer = new ServerStandardEnvironment(logger, timeoutForLongPollingRequest:2*60*1000);
 var defaultBustStop = envClient.BusStop;
 
 try

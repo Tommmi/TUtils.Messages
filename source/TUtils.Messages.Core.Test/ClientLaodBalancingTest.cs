@@ -38,11 +38,14 @@ namespace TUtils.Messages.Core.Test
 		[TestMethod]
 		public async Task TestClientLoadBalancing1()
 		{
-			var logImpl = new LogConsoleWriter(
+			var logWriter = new LogConsoleWriter(
 				LogSeverityEnum.INFO,
 				namespacesWhiteList:new List<string>(), 
 				namespacesBlackList:new List<string>());
-			var env = new ServerStandardEnvironment(logImpl, Assembly.GetAssembly(GetType()));
+			var env = new ServerStandardEnvironment(
+				logWriter, 
+				timeoutForLongPollingRequest:2000, 
+				rootAssemblies:Assembly.GetAssembly(GetType()));
 
 			_countReceivedRequestsFromClient1 = 0;
 			_countReceivedRequestsFromClient2 = 0;

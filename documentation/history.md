@@ -1,5 +1,8 @@
 # History of TUtils.Messages
 
+## Version 1.2.* - 28.07.2016
+constructor of ServerStandardEnvironment enhanced
+
 ## Version 1.1.* - 13.07.2016
 IBusStop.IncludingBroadcastMessages renamed to IncludingMessagesToOtherBusStops
 

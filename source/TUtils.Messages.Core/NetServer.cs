@@ -40,6 +40,23 @@ namespace TUtils.Messages.Core
 
 		#region constructor
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="clientLoadBalancing">
+		/// ClientLoadBalancing or NoClientLoadBalancing
+		/// </param>
+		/// <param name="serializer"> </param>
+		/// <param name="queueFactory"></param>
+		/// <param name="messageBus"></param>
+		/// <param name="cancellationToken"></param>
+		/// <param name="queueEntryProtocol"></param>
+		/// <param name="messageBusBaseProtocol"></param>
+		/// <param name="bridgeProtocol"></param>
+		/// <param name="logger"></param>
+		/// <param name="getTimeoutForLongPollingRequest">
+		/// after how many milliseconds at maximum should INetServer.OnDequeue() return with a response ?
+		/// </param>
 		public NetServer(
 			IClientLoadBalancing clientLoadBalancing,
 			IMessageSerializer serializer,

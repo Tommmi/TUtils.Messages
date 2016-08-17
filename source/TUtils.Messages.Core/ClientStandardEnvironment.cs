@@ -25,7 +25,7 @@ namespace TUtils.Messages.Core
 	{
 		#region fields
 
-		private readonly int _requestRetryIntervallTimeMs;
+		private readonly int _diconnectedRetryIntervallTimeMs;
 		private readonly INetClientFactory _netClientFactory;
 		private readonly IMessageBusBaseProtocol _messageBusBaseProtocol;
 		private readonly IndexedTable<Uri, BusProxy, NetClientQueue> _netQueues = new IndexedTable<Uri, BusProxy, NetClientQueue>();
@@ -56,7 +56,7 @@ namespace TUtils.Messages.Core
 
 		public async Task<IMessageBusBase> ConnectToServer(Uri serverAddress)
 		{
-			var netClientQueue = new NetClientQueue(_netClientFactory, Serializer, Logger, SystemTime, serverAddress, _requestRetryIntervallTimeMs);
+			var netClientQueue = new NetClientQueue(_netClientFactory, Serializer, Logger, SystemTime, serverAddress, _diconnectedRetryIntervallTimeMs);
 			var busProxy = new BusProxy(netClientQueue, netClientQueue, _messageBusBaseProtocol, UniqueTimeStampCreator, CancellationToken, Logger);
 			await Bridge.AddBus(busProxy);
 			lock (_sync)
@@ -98,10 +98,10 @@ namespace TUtils.Messages.Core
 		/// <param name="logWriter"></param>
 		/// <param name="clientUri"></param>
 		/// <param name="additionalConfiguration">may be null</param>
-		/// <param name="requestRetryIntervallTimeMs">
+		/// <param name="diconnectedRetryIntervallTimeMs">
 		/// how many milli seconds should the client wait at minimum between two failed polling requests ?
-		/// Note ! if a server isn't available the client will retry to connect it with this 
-		/// intervall time. This value hasn't any effect on the time between two successfully requests.
+		/// Note ! if a server isn't available the client will retry to connect with this 
+		/// intervall time. This value hasn't any effect on the time between two successfully executed requests.
 		/// The long polling timeout shouldn't be smaller than requestRetryIntervallTimeMs !
 		/// </param>
 		/// <param name="rootAssemblies">
@@ -114,11 +114,11 @@ namespace TUtils.Messages.Core
 			ILogWriter logWriter,
 			string clientUri,
 			Action<HttpClient> additionalConfiguration,
-			int requestRetryIntervallTimeMs,
+			int diconnectedRetryIntervallTimeMs,
 			params Assembly[] rootAssemblies)
 		{
 			var localBusEnvironment = new LocalBusEnvironment(logWriter);
-			_requestRetryIntervallTimeMs = requestRetryIntervallTimeMs;
+			_diconnectedRetryIntervallTimeMs = diconnectedRetryIntervallTimeMs;
 			ClientUri = clientUri;
 			CancelSource = localBusEnvironment.CancelSource;
 			CancellationToken = CancelSource.Token;

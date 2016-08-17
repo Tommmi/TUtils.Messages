@@ -41,6 +41,10 @@ namespace TUtils.Messages.Core
 		/// 
 		/// </summary>
 		/// <param name="logImplementor"></param>
+		/// <param name="timeoutForLongPollingRequest">
+		/// after how many milli seconds may last a "long-polling" request at maximum ?
+		/// This depends on server and router configuration.
+		/// </param>
 		/// <param name="rootAssemblies">
 		/// assemblies, which contains serializable types.
 		/// Referenced assemblies will be included automatically.
@@ -48,6 +52,7 @@ namespace TUtils.Messages.Core
 		/// </param>
 		public ServerStandardEnvironment(
 			ILogWriter logImplementor,
+			int timeoutForLongPollingRequest,
 			params Assembly[] rootAssemblies)
 		{
 			CancelSource = new CancellationTokenSource();
@@ -87,7 +92,7 @@ namespace TUtils.Messages.Core
 				messageBusBaseProtocol,
 				bridgeProtocol,
 				Logger,
-				getTimeoutForLongPollingRequest: () => 2000);
+				getTimeoutForLongPollingRequest: () => timeoutForLongPollingRequest);
 
 			var busStopFactory = new BusStopFactory(
 				Bus, 

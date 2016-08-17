@@ -55,7 +55,7 @@ namespace TUtils.Messages.Core.Test
 				logger,
 				clientUri: "gerlach-it.de/client1",
 				additionalConfiguration: null,
-				requestRetryIntervallTimeMs: 1000,
+				diconnectedRetryIntervallTimeMs: 1000,
 				rootAssemblies: Assembly.GetAssembly(GetType()));
 
 			var certificateVerifier = Substitute.For<ICertificateVerifier>();
