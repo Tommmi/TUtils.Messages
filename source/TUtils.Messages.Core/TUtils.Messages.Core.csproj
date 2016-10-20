@@ -31,8 +31,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NetSerializer, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>$(SolutionDir)packages\NetSerializer.4.1.0\lib\net45\NetSerializer.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
