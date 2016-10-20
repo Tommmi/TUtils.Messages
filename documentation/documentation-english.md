@@ -62,6 +62,8 @@ The simplest way to generate a local message bus, which transports messages with
 var logger = new Log4NetWriter();
 var simpleMessageEnvironment = new LocalBusEnvironment(logger);
 ```
+In this case you must include the following assemby also:
+    - `{repository}\lib\log4net.dll` einbinden
 
 Of course you can also use another logger:
 ``` CSharp

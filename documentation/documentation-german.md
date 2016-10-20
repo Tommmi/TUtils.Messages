@@ -64,6 +64,8 @@ ist folgende:
 var logger = new Log4NetWriter();
 var simpleMessageEnvironment = new LocalBusEnvironment(logger);
 ```
+In diesem Fall muss man auch das Assembly
+    - `{repository}\lib\log4net.dll` einbinden
 
 Natürlich kann man auch andere Logger verwenden:
 ``` CSharp

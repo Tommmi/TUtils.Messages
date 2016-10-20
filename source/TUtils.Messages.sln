@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TUtils.Messages.Common", "TUtils.Messages.Common\TUtils.Messages.Common.csproj", "{B7EE5D52-5DA6-4001-A74A-E2C53510E0D6}"
 EndProject
@@ -11,6 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TUtils.Messages.Core.Test",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{C8DE78CA-5CBE-4CAC-AE61-45F98B871BF9}"
 	ProjectSection(SolutionItems) = preProject
+		..\documentation\documentation-english.md = ..\documentation\documentation-english.md
 		..\documentation\documentation-german.md = ..\documentation\documentation-german.md
 		..\documentation\history.md = ..\documentation\history.md
 		..\documentation\Messaging.xlsx = ..\documentation\Messaging.xlsx

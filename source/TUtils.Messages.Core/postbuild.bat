@@ -1,4 +1,4 @@
-﻿::
+::
 
 :: %1: project dir
 :: %2: debug release
@@ -8,5 +8,5 @@
 :: copy output to ..\..\lib
 ::**********************************************************
 copy "%1bin\%2\%3" "%1..\..\lib\%3"
-copy "%1..\external\NetSerializer\NetSerializer\bin\Debug\*.dll" "%1..\..\lib\*.dll"
+copy "%1bin\%2\NetSerializer.dll" "%1..\..\lib\NetSerializer.dll"
 
