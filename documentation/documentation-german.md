@@ -1,45 +1,45 @@
 # Messaging Framework
 ## Was ist TUtils.Messages ?
-`TUtils.Messages` ermöglicht die Errichtung einer virtuellen Kommunikationsinfrastruktur, mittels derer verschiedene 
+`TUtils.Messages` ermÃ¶glicht die Errichtung einer virtuellen Kommunikationsinfrastruktur, mittels derer verschiedene 
 Programm-Komponenten miteinander kommunizieren. Virtuell ist diese Infrastruktur insofern, dass die miteinander 
-kommuniziernden Programm-Komponenten nichts über den physischen Ort oder die verwendete Technologie des genutzten 
-Kommunikationsmediums oder des Kommunikationspartners wissen. Für die beteiligten Kommunikationskomponenten hängen 
-alle an einem virtuellen Datenbus, unabhängig davon, ob alle Teilkomponenten im selben Thread, im selben Prozess, 
+kommuniziernden Programm-Komponenten nichts Ã¼ber den physischen Ort oder die verwendete Technologie des genutzten 
+Kommunikationsmediums oder des Kommunikationspartners wissen. FÃ¼r die beteiligten Kommunikationskomponenten hÃ¤ngen 
+alle an einem virtuellen Datenbus, unabhÃ¤ngig davon, ob alle Teilkomponenten im selben Thread, im selben Prozess, 
 auf der selben Maschine oder auf unterschiedlichen Servern oder unterschiedlichen Clients laufen. 
-Jeder kann mit jedem kommunizieren, solange sie am gleichen Datenbus hängen. Bei der Konfiguration der 
-konkreten Kommunikationsinfrastruktur können im Prinzip unterschiedlichste Technologien zum Einsatz kommen: 
+Jeder kann mit jedem kommunizieren, solange sie am gleichen Datenbus hÃ¤ngen. Bei der Konfiguration der 
+konkreten Kommunikationsinfrastruktur kÃ¶nnen im Prinzip unterschiedlichste Technologien zum Einsatz kommen: 
 Inprocess-Queuing, HTTP, IP, Schmalbandfunk, SMS, Email, Windows-Sockets, Shared Memory, WebDAV. 
 Alles was im Prinzip geeignet ist, Daten zu transportieren und Signale zu senden, kann genutzt werden.
 
-`TUtils.Messages` verfügt derzeit nur über Implementationen für .NET, HTTP und Inprocess-Queueing. Eine Implementation 
-für JavaScript ist derzeit in Arbeit.
+`TUtils.Messages` verfÃ¼gt derzeit nur Ã¼ber Implementationen fÃ¼r .NET, HTTP und Inprocess-Queueing. Eine Implementation 
+fÃ¼r JavaScript ist derzeit in Arbeit.
 
-`TUtils.Messages` ist Message-orientiert: Die Kommunikation erfolgt asynchron über Messages, was nichts anderes 
+`TUtils.Messages` ist Message-orientiert: Die Kommunikation erfolgt asynchron Ã¼ber Messages, was nichts anderes 
 sind als Klasseninstanzen, die komplett(!) serialisierbar sind. Bei der Gestaltung der .NET Implementation wurde 
-viel Wert darauf gelegt, dass man mittels des Schlüsselworts `await` flüssigen Code schreiben kann, was bei 
-asynchronen Schnitstellen nicht unbedingt selbstverständlich ist.
+viel Wert darauf gelegt, dass man mittels des SchlÃ¼sselworts `await` flÃ¼ssigen Code schreiben kann, was bei 
+asynchronen Schnitstellen nicht unbedingt selbstverstÃ¤ndlich ist.
 
-`TUtils.Messages` ist Daten-Bus-orientiert: Alle Kommunikationsmodule registrieren sich an einem Bus und können 
+`TUtils.Messages` ist Daten-Bus-orientiert: Alle Kommunikationsmodule registrieren sich an einem Bus und kÃ¶nnen 
 Messages senden und empfangen. 
 
 ## Wozu eignet sich TUtils.Messages ?
-- TUtils.Messages ermöglicht Message-basierte Kommunikation. Darum ist das **Hauptfeature** die Kommunikation 
-zwischen zeitgleich laufenden Vorgängen, Tasks und Threads.
-- TUtils.Messages ermöglicht die Virtualisierung der Kommunikationsinfrastruktur. Darum lassen sich leicht 
-automatisierte Komponenten- oder Systemtests entwickeln, die unabhängig von der Netzwerkinfrastruktur ablaufen können.
+- TUtils.Messages ermÃ¶glicht Message-basierte Kommunikation. Darum ist das **Hauptfeature** die Kommunikation 
+zwischen zeitgleich laufenden VorgÃ¤ngen, Tasks und Threads.
+- TUtils.Messages ermÃ¶glicht die Virtualisierung der Kommunikationsinfrastruktur. Darum lassen sich leicht 
+automatisierte Komponenten- oder Systemtests entwickeln, die unabhÃ¤ngig von der Netzwerkinfrastruktur ablaufen kÃ¶nnen.
 - *Rein theoretische Betrachtung:* Der virtuelle Bus ist vom Prinzip her nicht Client-Server basiert. 
-Darum entfällt (applikationslogisch betrachtet) die Rolle des Servers. Zwar können Teilnehmer des Busses Aufgaben eines 
-Services übernehmen, aber die Rolle eines zentralen Servers ist nicht mehr zwingend vorgeschrieben. Darum könnte man 
-ohne die Programmierung und Wartung eines zentralen Applikations-Servers eine Anwendung betreiben, die trotzdem über 
-ein weltweites Kommunikationsnetzwerk verfügt. Wie kann das sein ? Technisch betrachtet benötigt man zur Nutzung des 
+Darum entfÃ¤llt (applikationslogisch betrachtet) die Rolle des Servers. Zwar kÃ¶nnen Teilnehmer des Busses Aufgaben eines 
+Services Ã¼bernehmen, aber die Rolle eines zentralen Servers ist nicht mehr zwingend vorgeschrieben. Darum kÃ¶nnte man 
+ohne die Programmierung und Wartung eines zentralen Applikations-Servers eine Anwendung betreiben, die trotzdem Ã¼ber 
+ein weltweites Kommunikationsnetzwerk verfÃ¼gt. Wie kann das sein ? Technisch betrachtet benÃ¶tigt man zur Nutzung des 
 Internets als Transportschicht dennoch einen Server, weil die technisch zugrunde liegende Kommunikation 
 Client-Server-basiert ist. Dieser Server muss aber nicht zwingend applikationsspezifisch sein, sondern muss lediglich 
-einer Anwendung einen globalen Bus zur Verfügung stellen. Eine Anwendung für ein solches Szenario wäre z.B. eine 
+einer Anwendung einen globalen Bus zur VerfÃ¼gung stellen. Eine Anwendung fÃ¼r ein solches Szenario wÃ¤re z.B. eine 
 firmenintern ad-hoc laufende Teamanwendung, ganz ohne Installation eines Servers durch einen Netzwerkadministrator. 
 Da die Technologie keine Rolle spielt, kann die Anwendung auch als JavaScript-Programm in einem Browser arbeiten. 
-Im Gegensatz zu einer Webanwendung eines Webservice-Anbieters müssen die Daten nicht bei einem Drittanbieter gehostet werden.
-Unabhängig von diesen Überlegungen bleibt aber das Hauptziel von `TUtils.Messages` die Kommunikation zwischen zeitgleich 
-laufenden Vorgängen.
+Im Gegensatz zu einer Webanwendung eines Webservice-Anbieters mÃ¼ssen die Daten nicht bei einem Drittanbieter gehostet werden.
+UnabhÃ¤ngig von diesen Ãœberlegungen bleibt aber das Hauptziel von `TUtils.Messages` die Kommunikation zwischen zeitgleich 
+laufenden VorgÃ¤ngen.
 
 ## Programmierung
 ### Voraussetzungen
@@ -57,7 +57,7 @@ laufenden Vorgängen.
 
 
 ### Lokalen Bus erzeugen
-Die einfachste Möglichkeit, einen lokalen Messagebus zu erzeugen, der Messages innerhalb eines Prozesses transportiert, 
+Die einfachste MÃ¶glichkeit, einen lokalen Messagebus zu erzeugen, der Messages innerhalb eines Prozesses transportiert, 
 ist folgende:
 
 ``` CSharp
@@ -67,7 +67,7 @@ var simpleMessageEnvironment = new LocalBusEnvironment(logger);
 In diesem Fall muss man auch das Assembly
     - `{repository}\lib\log4net.dll` einbinden
 
-Natürlich kann man auch andere Logger verwenden:
+NatÃ¼rlich kann man auch andere Logger verwenden:
 ``` CSharp
 // usefull in Unittests:
 var logger = new LogConsoleWriter(
@@ -78,7 +78,7 @@ var logger = new LogConsoleWriter(
 
 Um einen eigenen Logger zu definieren, muss man das Interface `ILogWriter` implementieren.
 
-`LocalBusEnvironment` ist lediglich eine bequeme Möglichkeit für eine Standard-Initialisierung eines Busses.
+`LocalBusEnvironment` ist lediglich eine bequeme MÃ¶glichkeit fÃ¼r eine Standard-Initialisierung eines Busses.
 Ein Bus ist eine Klasse, die das Interface `IMessageBus` implementiert, wenigstens aber das Interface `IMessageBusBase`.
 Hiervon gibt es zwei:
 - `MessageBus`: prozess-lokaler Bus
@@ -88,34 +88,34 @@ Um einen lokalen Bus zu erzeugen, muss man also die Klasse `MessageBus` instanti
 DependencyInjection-Parametern verlangt. Instantiieren Sie `MessageBus` manuell, um das Standardverhalten detailliert 
 zu beeinflussen.
 
-> Die MessageBus-Implementation `MessageBus` führt aus Performancegründen keine Serialisierung oder Deserialisierung 
-der Messages aus. Die übergebenen Message-Objekte werden also als Referenz direkt weitergegeben. Ein Empfänger 
+> Die MessageBus-Implementation `MessageBus` fÃ¼hrt aus PerformancegrÃ¼nden keine Serialisierung oder Deserialisierung 
+der Messages aus. Die Ã¼bergebenen Message-Objekte werden also als Referenz direkt weitergegeben. Ein EmpfÃ¤nger 
 einer Message sollte deshalb nie die erhaltene Message modifizieren.
 
 ### Messages senden
-Zwar liefert ein Bus (`IMessageBus`) bereits eine Möglichkeit, Messages zu senden 
+Zwar liefert ein Bus (`IMessageBus`) bereits eine MÃ¶glichkeit, Messages zu senden 
 ``` CSharp
 await simpleMessageEnvironment.Bus.SendPort.Enqueue(new MyMessage());
 ```
-dennoch wird empfohlen, nur über einen Busstop auf den Bus zuzugreifen. Ein Busstop ist eine Klasse, die das 
-Interface `IBusStop` implementiert. Ein BusStop verfügt über eine eigene globale Adresse, die in Messages 
-mitangegeben werden kann. Messages, die das Interface `IAddressedMessage` implementieren, verfügen über eine 
-Zieladresse. Messages, die das Interface `IRequestMessage` implementieren, verfügen außerdem über eine Quelladresse, 
+dennoch wird empfohlen, nur Ã¼ber einen Busstop auf den Bus zuzugreifen. Ein Busstop ist eine Klasse, die das 
+Interface `IBusStop` implementiert. Ein BusStop verfÃ¼gt Ã¼ber eine eigene globale Adresse, die in Messages 
+mitangegeben werden kann. Messages, die das Interface `IAddressedMessage` implementieren, verfÃ¼gen Ã¼ber eine 
+Zieladresse. Messages, die das Interface `IRequestMessage` implementieren, verfÃ¼gen auÃŸerdem Ã¼ber eine Quelladresse, 
 die vom BusStop beim Senden automatisch gesetzt wird. 
-> In einem Bus bestimmen nicht die Sender einer Message, wer die Message erhält. Stattdessen registrieren sich 
-die Empfänger für bestimmte Messages. So kann man sich in einem BusStop für Messages registrieren, die die gleiche 
-Zieladresse haben, wie der BusStop. Es ist aber auch möglich, jede beliebige andere Message zu erhalten, wenn man will.
+> In einem Bus bestimmen nicht die Sender einer Message, wer die Message erhÃ¤lt. Stattdessen registrieren sich 
+die EmpfÃ¤nger fÃ¼r bestimmte Messages. So kann man sich in einem BusStop fÃ¼r Messages registrieren, die die gleiche 
+Zieladresse haben, wie der BusStop. Es ist aber auch mÃ¶glich, jede beliebige andere Message zu erhalten, wenn man will.
 
 `LocalBusEnvironment` definiert bereits einen Default-Busstop:
 ``` CSharp
 IBusStop LocalBusEnvironment.BusStop { get; }
 ```
-Sie können aber aber auch einen neuen BusStop erzeugen:
+Sie kÃ¶nnen aber aber auch einen neuen BusStop erzeugen:
 ``` CSharp
 Task<IBusStop> LocalBusEnvironment.AddNewBusStop(string busStopName)
 ```
 
-Für das Senden einer Message sind folgende Methoden in einem BusStop vorgesehen:
+FÃ¼r das Senden einer Message sind folgende Methoden in einem BusStop vorgesehen:
 ``` CSharp
 /// <summary>
 /// Posts message "message" into bus.
@@ -186,7 +186,7 @@ Task<TimeoutResult<TResponse>> SendWithTimeout<TRequest, TResponse>(TRequest req
 ```
 
 ### **Messages empfangen**
-Grundsätzlich gibt es zwei Möglichkeiten, Messages zu empfangen:
+GrundsÃ¤tzlich gibt es zwei MÃ¶glichkeiten, Messages zu empfangen:
 #### 1. Messagehandler registrieren
 Man registriert einen Delegate, der bei Empfang einer bestimmten Message automatisch aufgerufen wird  
 
@@ -212,7 +212,7 @@ async Task OnMyRequestMessage(MyRequestMessage myRequestMessage, CancellationTok
 ```
 
 **.FilteredBy( )**  
-Nur auf Messages reagieren, für die ein bestimmtes Filterkriterium passt.
+Nur auf Messages reagieren, fÃ¼r die ein bestimmtes Filterkriterium passt.
 ``` CSharp
 _env.BusStop
 	.On<MyRequestMessage>()
@@ -242,7 +242,7 @@ _env.BusStop
 Man wartet im aktuellen Codefluss asynchron auf den Empfang der Message
 
 **Send( )**  
-Eine Message vom Typ IRequestMessage senden und auf den Empfang der zugehörigen ResponseMessage warten, die an 
+Eine Message vom Typ IRequestMessage senden und auf den Empfang der zugehÃ¶rigen ResponseMessage warten, die an 
 die Adresse dieses BusStops gesendet wurde.
 ``` CSharp
 async void Test()
@@ -289,8 +289,8 @@ private class MyResponseMessage : IPrioMessage, IResponseMessage
 }
 ```
 > **IPrioMessage**  
-Messages, die `IPrioMessage` implementieren, werden gemäß der gesetzten Priorität gegenüber anderen Messages bevorzugt 
-oder benachteiligt. Eine Message ohne implementiertes Interface `IPrioMessage` verwendet implizit die Priorität **200**.
+Messages, die `IPrioMessage` implementieren, werden gemÃ¤ÃŸ der gesetzten PrioritÃ¤t gegenÃ¼ber anderen Messages bevorzugt 
+oder benachteiligt. Eine Message ohne implementiertes Interface `IPrioMessage` verwendet implizit die PrioritÃ¤t **200**.
 
 **SendWithTimeout( )**  
 Verwendet den Default-Timeout, der in LocalBusEnvironment gesetzt wurde (20 Sekunden).
@@ -321,30 +321,30 @@ if (!timeOutResult.TimeoutElapsed)
 ```
 
 ### WaitForIdle()
-Eine der am schwierigsten zu analysierenden Probleme mehrläufiger Systeme ist, dass einzelne Services überlastet 
-werden können und die Aufgabenlast immer weiter wächst, aber nicht schnell genug abgearbeitet werden kann. 
-Das äußerst sich darin, dass Queues immer weiter anwachsen. Weil nicht überlastete Komponenten/Abläufe nicht wissen, 
-dass es einzelne andere überlastete Teilsysteme gibt, stellen sie immer weitere Aufgaben an das System und überlasten 
+Eine der am schwierigsten zu analysierenden Probleme mehrlÃ¤ufiger Systeme ist, dass einzelne Services Ã¼berlastet 
+werden kÃ¶nnen und die Aufgabenlast immer weiter wÃ¤chst, aber nicht schnell genug abgearbeitet werden kann. 
+Das Ã¤uÃŸerst sich darin, dass Queues immer weiter anwachsen. Weil nicht Ã¼berlastete Komponenten/AblÃ¤ufe nicht wissen, 
+dass es einzelne andere Ã¼berlastete Teilsysteme gibt, stellen sie immer weitere Aufgaben an das System und Ã¼berlasten 
 es dadurch nur um so mehr. Das ist eine Problemkategorie, die singlethreaded Programme mit synchroner innerer 
-Kommunikation praktisch nicht kennen. Eine sehr gute Lösung hierfür ist, die meisten Messages als Request/Response-Paare 
+Kommunikation praktisch nicht kennen. Eine sehr gute LÃ¶sung hierfÃ¼r ist, die meisten Messages als Request/Response-Paare 
 zu gestalten und immer auf die Beendigung der fernen Message-Verarbeitung zu warten. Eine solche Vorgehensweise macht 
-allerdings zum Teil die Vorteile einer massiv parallelen Verarbeitung zunichte. Eine andere Möglichkeit ist, Messages, 
-deren Verarbeitung verzögert werden darf und langwierige Verarbeitungen anstoßen, niedrig zu priorisieren (`IPrioMessage`).
-Eine dritte interessante Lösung, die in diesem Framwork angeboten wird, ist der Aufruf der Methode 
+allerdings zum Teil die Vorteile einer massiv parallelen Verarbeitung zunichte. Eine andere MÃ¶glichkeit ist, Messages, 
+deren Verarbeitung verzÃ¶gert werden darf und langwierige Verarbeitungen anstoÃŸen, niedrig zu priorisieren (`IPrioMessage`).
+Eine dritte interessante LÃ¶sung, die in diesem Framwork angeboten wird, ist der Aufruf der Methode 
 ``` CSharp
 Task IBusStop.WaitForIdle()
 ```
-WaitForIdle liefert einen Task zurück, der erst completed, wenn im Bus nicht mehr als 5 Messages gerade von einem 
-Handler verarbeitet werden. Die Grenze für die Messageanzahl ist bei der Initialisierung des Busses definierbar, 
+WaitForIdle liefert einen Task zurÃ¼ck, der erst completed, wenn im Bus nicht mehr als 5 Messages gerade von einem 
+Handler verarbeitet werden. Die Grenze fÃ¼r die Messageanzahl ist bei der Initialisierung des Busses definierbar, 
 LocalBusEnvironment definiert 5 als Default.
 
 ### Einen globalen Bus erzeugen
-Bisher wurden nur Szenarien erörtert, bei dem Messages innerhalb ein und deselben Prozesses gesendet wurden.
+Bisher wurden nur Szenarien erÃ¶rtert, bei dem Messages innerhalb ein und deselben Prozesses gesendet wurden.
 Um die Prozessgrenzen zu verlassen, muss man lokale Busse verschiedener Prozesse oder Maschinen miteinander zu einem
 gemeinsammen Bus verbinden.
-Die einfachste Möglichkeit hierzu ist, die fertigen Konfigurationen 
-`ClientStandardEnvironment` und `ServerStandardEnvironment` zu verwenden. `ClientStandardEnvironment` verwendet man für
-Betriebssystemprozesse, die netzwerktechnisch als Client arbeiten, `ServerStandardEnvironment` verwendet man für den
+Die einfachste MÃ¶glichkeit hierzu ist, die fertigen Konfigurationen 
+`ClientStandardEnvironment` und `ServerStandardEnvironment` zu verwenden. `ClientStandardEnvironment` verwendet man fÃ¼r
+Betriebssystemprozesse, die netzwerktechnisch als Client arbeiten, `ServerStandardEnvironment` verwendet man fÃ¼r den
 Betriebssystemprozess, der netzwerktechnisch als zentraler Server arbeitet. `LocalBusEnvironment` wird gar nicht mehr
 verwendet.
 #### Client-PC
@@ -358,16 +358,16 @@ var envClient = new ClientStandardEnvironment(
 var defaultBustStop = envClient.BusStop;
 ```
 
-> Alle Messages, die über das Netzwerk transportiert werden, müssen serialisierbar sein. Darum müssen alle  Message-Klassendefinitionen das Attribut **[Serializable]** aufweisen ! Sie dürfen **nicht** das Interface ISerializable
+> Alle Messages, die Ã¼ber das Netzwerk transportiert werden, mÃ¼ssen serialisierbar sein. Darum mÃ¼ssen alle  Message-Klassendefinitionen das Attribut **[Serializable]** aufweisen ! Sie dÃ¼rfen **nicht** das Interface ISerializable
 aufweisen ! Wenn sich nicht alle verwendeten Messages in Assembly.GetEntry() oder einem Sub-Assembly befinden (z.B. in
-Unittests ist das der Fall), muss man die Assemblies bei der Initialisierung manuell hinzufügen (siehe Konstruktor
+Unittests ist das der Fall), muss man die Assemblies bei der Initialisierung manuell hinzufÃ¼gen (siehe Konstruktor
 ClientStandardEnvironment(..)). 
 
 #### Server
 ``` CSharp
 var logger = new Log4NetWriter();
 var envServer = new ServerStandardEnvironment(logger,timeoutForLongPollingRequest:2*60*1000);
-var defaultBustStop = envClient.BusStop;
+var defaultBustStop = envServer.BusStop;
 
 try
 {
