@@ -1,4 +1,7 @@
 # History of TUtils.Messages
+## Version 1.2.* - 25.10.2016
+no relevant changes - just rebuilt
+
 ## Version 1.2.* - 20.10.2016
 external library NetSerializer will be get by NuGet only and won't be versioned anymore.
 NuGet folder packages won't be versioned anymore.
