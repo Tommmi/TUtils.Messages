@@ -1,4 +1,7 @@
 # History of TUtils.Messages
+## Version 1.2.* - 13.11.2016
+no relevant changes - just rebuilt
+
 ## Version 1.2.* - 25.10.2016
 no relevant changes - just rebuilt
 
