@@ -42,7 +42,7 @@ namespace TUtils.Messages.Core
 		/// </summary>
 		/// <param name="logImplementor"></param>
 		/// <param name="timeoutForLongPollingRequest">
-		/// after how many milli seconds may last a "long-polling" request at maximum ?
+		/// how many milli seconds may last a "long-polling" request at maximum ?
 		/// This depends on server and router configuration.
 		/// </param>
 		/// <param name="rootAssemblies">

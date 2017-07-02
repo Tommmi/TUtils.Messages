@@ -352,7 +352,10 @@ var envClient = new ClientStandardEnvironment(
 	clientUri: "fooBarClient", // any unique string
 	additionalConfiguration: null,
 	diconnectedRetryIntervallTimeMs: 30 * 1000);
+await envClient.ConnectToServer(new Uri("http://localhost:8097"));
 var defaultBustStop = envClient.BusStop;
+var result = await defaultBustStop.SendWithTimeoutAndRetry<TestRequestMessage, TestResponseMessage>(
+	new TestRequestMessage(envServer.BusStop.BusStopAddress, "hello world"));
 ```
 
 > All messages that are being transported over the network must be serializable. 

@@ -26,7 +26,7 @@ namespace TUtils.Messages.Common.BusStop
 		/// elapsed (see constructor parameter).
 		/// request.RequestId and request.Source will be set by this method Send() automatically.
 		/// SendWithTimeoutAndRetry() will retry to send the request up to 10 times within the given timeout.
-		/// The polling intervall time will be increased be each retry, bur won't be smaller than 100 ms.
+		/// The polling intervall time will be increased be each retry, but won't be smaller than 100 ms.
 		/// </summary>
 		/// <typeparam name="TRequest"></typeparam>
 		/// <typeparam name="TResponse"></typeparam>

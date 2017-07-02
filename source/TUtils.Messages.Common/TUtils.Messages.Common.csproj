@@ -111,6 +111,7 @@
   <ItemGroup>
     <None Include="postbuild.bat" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>$(ProjectDir)postbuild.bat $(ProjectDir) $(ConfigurationName) $(TargetFileName)</PostBuildEvent>

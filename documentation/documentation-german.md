@@ -355,7 +355,10 @@ var envClient = new ClientStandardEnvironment(
 	clientUri: "fooBarClient", // any unique string
 	additionalConfiguration: null,
 	diconnectedRetryIntervallTimeMs: 30 * 1000);
+await envClient.ConnectToServer(new Uri("http://localhost:8097"));
 var defaultBustStop = envClient.BusStop;
+var result = await defaultBustStop.SendWithTimeoutAndRetry<TestRequestMessage, TestResponseMessage>(
+	new TestRequestMessage(envServer.BusStop.BusStopAddress, "hello world"));
 ```
 
 > Alle Messages, die über das Netzwerk transportiert werden, müssen serialisierbar sein. Darum müssen alle  Message-Klassendefinitionen das Attribut **[Serializable]** aufweisen ! Sie dürfen **nicht** das Interface ISerializable

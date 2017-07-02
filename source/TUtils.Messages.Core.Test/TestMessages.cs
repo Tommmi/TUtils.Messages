@@ -39,11 +39,34 @@ namespace TUtils.Messages.Core.Test
 
 		public TestResponseMessage(TestRequestMessage requestMessage)
 		{
-			var request = (IRequestMessage) requestMessage;
-			var @this = (IResponseMessage) this;
+			var request = (IRequestMessage)requestMessage;
+			var @this = (IResponseMessage)this;
 			Destination = request.Source;
 			@this.RequestId = request.RequestId;
 			Value = requestMessage.Value;
 		}
 	}
+
+
+	[Serializable]
+	public class Message2Client : IAddressedMessage
+	{
+		private readonly IAddress _destination;
+		public string Value { get; }
+
+		public Message2Client(IAddress destination, string value)
+		{
+			_destination = destination;
+			Value = value;
+		}
+
+		IAddress IAddressedMessage.Destination
+		{
+			get { return _destination; }
+		}
+
+		IAddress IAddressedMessage.Source { get; set; }
+	}
+
+
 }
