@@ -178,7 +178,6 @@ namespace TUtils.Messages.Core.Net
 		private readonly SortedDictionary<WaitingTask, bool> _waitingTasksStep1 = new SortedDictionary<WaitingTask, bool>();
 		private readonly SortedDictionary<WaitingTask, bool> _waitingTasksStep2 = new SortedDictionary<WaitingTask, bool>();
 
-		private readonly ITLog _logger;
 		private readonly IUniqueTimeStampCreator _uniqueTimeStampCreator;
 		private readonly ISystemTimeProvider _timeProvider;
 		private readonly int _maxCountOfWaitingTasks;
@@ -202,12 +201,10 @@ namespace TUtils.Messages.Core.Net
 		/// </param>
 		public ClientLoadBalancing(
 			CancellationToken cancellationToken, 
-			ITLog logger,
 			IUniqueTimeStampCreator uniqueTimeStampCreator,
 			ISystemTimeProvider timeProvider,
 			int maxCountOfWaitingTasks)
 		{
-			_logger = logger;
 			_uniqueTimeStampCreator = uniqueTimeStampCreator;
 			_timeProvider = timeProvider;
 			_maxCountOfWaitingTasks = maxCountOfWaitingTasks;
@@ -218,13 +215,11 @@ namespace TUtils.Messages.Core.Net
 				threadName: "DDOSAttackShield_Step1",
 				cancellationToken: cancellationToken,
 				threadPriority: ThreadPriority.Normal,
-				logger: logger,
 				synchronousThreadMethod: TaskPump1);
 			AsyncThreadStarter.Start(
 				threadName: "DDOSAttackShield_Step2",
 				cancellationToken: cancellationToken,
 				threadPriority: ThreadPriority.Lowest,
-				logger: logger,
 				synchronousThreadMethod: TaskPump2);
 		}
 
@@ -275,7 +270,7 @@ namespace TUtils.Messages.Core.Net
 								_waitingTasksStep2.Add(waitingTask.Key,true);
 
 							_waitingTasksStep1.Clear();
-							_logger.LogInfo(this, "{0} messages pumped (task pump 1)", () => count);
+							this.Log().LogInfo(() => new { messageCnt = count, descr = "task pump 1" });
 						}
 					}
 				}

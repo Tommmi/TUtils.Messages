@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TUtils.Common;
 using TUtils.Common.Common;
 using TUtils.Common.Logging;
+using TUtils.Common.Logging.Common;
 using TUtils.Common.Logging.LogMocs;
 using TUtils.Messages.Common;
 using TUtils.Messages.Common.BusStop;
@@ -65,7 +66,6 @@ namespace TUtils.Messages.Core.Test
 			{
 				CancellationTokenSource = new CancellationTokenSource();
 				CancellationToken = CancellationTokenSource.Token;
-				TLog logger = new TLog(new LogMocWriter(), false);
 				var queueFactory = new InprocessQueueFactory(CancellationToken);
 				UniqueTimeStampCreator = new UniqueTimeStampCreator();
 				var time = new SystemTimeProvider();
@@ -77,11 +77,10 @@ namespace TUtils.Messages.Core.Test
 						queueFactory, 
 						CancellationToken, 
 						UniqueTimeStampCreator, 
-						maxCountRunningTasks,
-						logger));
+						maxCountRunningTasks));
 				}
 
-				Bridge = new Bridge(logger);
+				Bridge = new Bridge();
 
 				var addressgenerator = new AddressGenerator();
 				ClientFactory = new Dictionary<IMessageBus, IBusStopFactory>();
@@ -111,6 +110,13 @@ namespace TUtils.Messages.Core.Test
 			}
 
 		}
+
+		[TestInitialize]
+		public void Initialize()
+        {
+			this.InitializeConsoleLogging(LogSeverityEnum.INFO);
+        }
+
 
 		[TestMethod]
 		public async Task TestBridge1()

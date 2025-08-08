@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using TUtils.Common;
+using TUtils.Common.Extensions;
 using TUtils.Common.Logging;
 using TUtils.Common.Logging.Common;
 using TUtils.Messages.Common;
@@ -92,7 +94,6 @@ namespace TUtils.Messages.Core.Bus
 		private readonly IQueueEntryProtocol _queueEntryProtocol;
 		private readonly IMessageBusBaseProtocol _messageBusBaseProtocol;
 		private readonly IBridgeProtocol _bridgeProtocol;
-		private readonly ITLog _logger;
 
 		/// <summary>
 		/// Tuples of (registration ID, queue ID, queue)
@@ -112,8 +113,7 @@ namespace TUtils.Messages.Core.Bus
 			CancellationToken cancellationToken,
 			IQueueEntryProtocol queueEntryProtocol,
 			IMessageBusBaseProtocol messageBusBaseProtocol,
-			IBridgeProtocol bridgeProtocol,
-			ITLog logger)
+			IBridgeProtocol bridgeProtocol)
 		{
 			_messageBus = messageBus;
 			_queue2BusProxy = queue2BusProxy;
@@ -122,28 +122,23 @@ namespace TUtils.Messages.Core.Bus
 			_queueEntryProtocol = queueEntryProtocol;
 			_messageBusBaseProtocol = messageBusBaseProtocol;
 			_bridgeProtocol = bridgeProtocol;
-			_logger = logger;
-			Task.Run(()=>Run().LogExceptions(logger),cancellationToken);
+			Task.Run(()=>Run().LogExceptions(),cancellationToken);
 		}
 
 		#endregion
 
 		#region private methods
 
-		private void LogMessage(object msg)
+		private void LogMessage(object msg, [CallerMemberName] string memberName = "")
 		{
-			if (_logger.IsActive(LogSeverityEnum.INFO, this))
-			{
-				string loggingText = $"message {msg.GetType().Name}";
-
-				var message = msg as IAddressedMessage;
-				if (message != null)
-				{
-					loggingText += $" source:{message.Source}, destination:{message.Destination}";
-				}
-				loggingText += $" content:{msg}";
-				_logger.LogInfo(this, loggingText);
-			}
+			this.Log().LogInfo(
+				map: () => new {
+								message = msg.GetType().Name,
+								content = msg.SerializeByTUtils(),
+								source = (msg as IAddressedMessage)?.Source,
+								destination = (msg as IAddressedMessage)?.Destination,
+						       },
+				memberName: memberName);
 		}
 
 
@@ -227,7 +222,7 @@ namespace TUtils.Messages.Core.Bus
 				else if (msg is IBusWaitForIdleRequest)
 				{
 #pragma warning disable 4014
-					 _messageBus.WaitForIdle().LogExceptions(_logger).ContinueWith(task =>
+					 _messageBus.WaitForIdle().LogExceptions().ContinueWith(task =>
 #pragma warning restore 4014
 					 {
 						 _queue2BusProxy.Enqueue(_messageBusBaseProtocol.CreateBusWaitForIdleResponse(task.IsCompleted));

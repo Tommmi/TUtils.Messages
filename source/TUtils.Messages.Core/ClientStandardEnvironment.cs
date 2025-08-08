@@ -40,8 +40,7 @@ namespace TUtils.Messages.Core
 		public IBusStop BusStop { get; }
 		public IMessageBus Bus { get; }
 		public IBusStopFactory BusStopFactory { get; }
-		public ITLog Logger { get; }
-		public IQueueFactory QueueFactory { get; }
+     	public IQueueFactory QueueFactory { get; }
 		public CancellationToken CancellationToken { get; }
 		public CancellationTokenSource CancelSource { get; }
 		public IMessageSerializer Serializer { get; }
@@ -56,8 +55,8 @@ namespace TUtils.Messages.Core
 
 		public async Task<IMessageBusBase> ConnectToServer(Uri serverAddress)
 		{
-			var netClientQueue = new NetClientQueue(_netClientFactory, Serializer, Logger, SystemTime, serverAddress, _diconnectedRetryIntervallTimeMs);
-			var busProxy = new BusProxy(netClientQueue, netClientQueue, _messageBusBaseProtocol, UniqueTimeStampCreator, CancellationToken, Logger);
+			var netClientQueue = new NetClientQueue(_netClientFactory, Serializer, SystemTime, serverAddress, _diconnectedRetryIntervallTimeMs);
+			var busProxy = new BusProxy(netClientQueue, netClientQueue, _messageBusBaseProtocol, UniqueTimeStampCreator, CancellationToken);
 			await Bridge.AddBus(busProxy);
 			lock (_sync)
 			{
@@ -111,13 +110,12 @@ namespace TUtils.Messages.Core
 		/// For Unittests use Assembly.GetAssembly(GetType())
 		/// </param>
 		public ClientStandardEnvironment(
-			ILogWriter logWriter,
 			string clientUri,
 			Action<HttpClient> additionalConfiguration,
 			int diconnectedRetryIntervallTimeMs,
 			params Assembly[] rootAssemblies)
 		{
-			var localBusEnvironment = new LocalBusEnvironment(logWriter);
+			var localBusEnvironment = new LocalBusEnvironment();
 			_diconnectedRetryIntervallTimeMs = diconnectedRetryIntervallTimeMs;
 			ClientUri = clientUri;
 			CancelSource = localBusEnvironment.CancelSource;
@@ -125,7 +123,6 @@ namespace TUtils.Messages.Core
 			QueueFactory = localBusEnvironment.InprocessQueueFactory;
 			BusStopFactory = localBusEnvironment.BusStopFactory;
 			UniqueTimeStampCreator = localBusEnvironment.UniqueTimeStampCreator;
-			Logger = localBusEnvironment.Logger;
 			SystemTime = localBusEnvironment.SystemTime;
 			_messageBusBaseProtocol = new MessageBusBaseProtocol();
 			Serializer = new MessageSerializer(
@@ -135,11 +132,11 @@ namespace TUtils.Messages.Core
 
 			Bus = localBusEnvironment.Bus;
 			BusStop = localBusEnvironment.BusStop;
-			Bridge = new Bridge(Logger);
+			Bridge = new Bridge();
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-			Bridge.AddBus(Bus).LogExceptions(Logger);
+			Bridge.AddBus(Bus).LogExceptions();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-			_netClientFactory = new NetClientFactory(clientUri, CancellationToken, Logger, additionalConfiguration);
+			_netClientFactory = new NetClientFactory(clientUri, CancellationToken, additionalConfiguration);
 		}
 
 		#endregion

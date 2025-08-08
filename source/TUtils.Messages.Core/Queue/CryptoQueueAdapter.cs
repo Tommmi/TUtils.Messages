@@ -59,7 +59,6 @@ namespace TUtils.Messages.Core.Queue
 		/// <param name="cancellationToken"></param>
 		/// <param name="timeoutMs"></param>
 		public CryptoQueueAdapter(
-			ITLog logger, 
 			IQueueFactory queueFactory, 
 			IQueueEntry queueEntry, 
 			IQueueExit queueExit, 
@@ -69,7 +68,7 @@ namespace TUtils.Messages.Core.Queue
 			ICertificate certificate,
 			ISymmetricCryptProvider symmetricCryptProvider,
 			CancellationToken cancellationToken, 
-			int timeoutMs) : base(logger, queueFactory, queueEntry, queueExit, cancellationToken)
+			int timeoutMs) : base(queueFactory, queueEntry, queueExit, cancellationToken)
 		{
 			_cryptProtocol = cryptProtocol;
 			_serializer = serializer;
@@ -170,7 +169,7 @@ namespace TUtils.Messages.Core.Queue
 			var waitResult = await waitOnResponseTask;
 			if (waitResult.TimeoutElapsed || waitResult.Value == null)
 			{
-				Logger.Log(LogSeverityEnum.ERROR, this,$"(7634723sj) other side didn't send response message InitCryptographicResponse");
+				this.Log().LogError(() => new { descr = "(7634723sj) other side didn't send response message InitCryptographicResponse" });
 				return false;
 			}
 			var response = (IInitCryptographicResponse) waitResult.Value;
@@ -180,13 +179,13 @@ namespace TUtils.Messages.Core.Queue
 			var publicCertOfResponse = response.ClientCertifikate.GetPublicCertificate(null);
 			if (!publicCertOfResponse.Verify(data: encryptedSymmetricSecret, signature: signature))
 			{
-				Logger.Log(LogSeverityEnum.ERROR, this, $"(8djg821hsh) InitCryptographicResponse hasn't signed the transfered secret");
+                this.Log().LogError(() => new { descr = "(8djg821hsh) InitCryptographicResponse hasn't signed the transfered secret" });
 				return false;
 			}
 			var isOtherNodeTrusted = _certificateVerifier.IsValidAndTrusted(publicCertOfResponse);
 			if (!isOtherNodeTrusted.Verified)
 			{
-				Logger.Log(LogSeverityEnum.ERROR, this,$"(j873ehjalkxnvt) certificate of other side could be verified {isOtherNodeTrusted.ErrorText}");
+                this.Log().LogError(() => new { isOtherNodeTrusted.ErrorText, descr = "(j873ehjalkxnvt) certificate of other side could be verified" });
 				return false;
 			}
 			var serializedSecret = _privateCertificate.Decrypt(encryptedSymmetricSecret);
@@ -199,7 +198,7 @@ namespace TUtils.Messages.Core.Queue
 				}
 				return true;
 			}
-			Logger.Log(LogSeverityEnum.ERROR, this, $"(j823fdgakm) secret couldn't be deserialized");
+            this.Log().LogError(() => new { descr = "(j823fdgakm) secret couldn't be deserialized" });
 			return false;
 		}
 
@@ -216,7 +215,7 @@ namespace TUtils.Messages.Core.Queue
 			var verifyResult = _certificateVerifier.IsValidAndTrusted(publicCertificateOfSender);
 			if (!verifyResult.Verified)
 			{
-				Logger.Log(LogSeverityEnum.ERROR, this,$"23gd273hn49t {verifyResult.ErrorText}");
+                this.Log().LogError(() => new { descr = "23gd273hn49t", verifyResult.ErrorText });
 				return;
 			}
 			var serializedSymmetricSecretBytes = serializedSymmetricSecret.GetData();

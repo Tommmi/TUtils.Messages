@@ -1,126 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B7EE5D52-5DA6-4001-A74A-E2C53510E0D6}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TUtils.Messages.Common</RootNamespace>
+    <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>TUtils.Messages.Common</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <RootNamespace>TUtils.Messages.Common</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="TUtils.Common">
-      <HintPath>..\external\TUtils.Common\TUtils.Common.dll</HintPath>
-    </Reference>
+    <PackageReference Include="TUtils2.Common" Version="0.0.24" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Bus\IMessageBusBaseProtocol.cs" />
-    <Compile Include="Bus\Messages\IBusNameRequestMessage.cs" />
-    <Compile Include="Bus\Messages\IBusNameResponseMessage.cs" />
-    <Compile Include="Bus\Messages\IBusRegisterBroadcastMessage.cs" />
-    <Compile Include="Bus\Messages\IBusRegisterByAddressMessage.cs" />
-    <Compile Include="Bus\Messages\IBusRegisterByTypeMessage.cs" />
-    <Compile Include="Bus\Messages\IBusUnregisterMessage.cs" />
-    <Compile Include="Bus\Messages\IBusWaitForIdleRequest.cs" />
-    <Compile Include="Bus\Messages\IBusWaitForIdleResponse.cs" />
-    <Compile Include="Bus\Messages\IBusRegisterBridgeMessage.cs" />
-    <Compile Include="Bus\Messages\IBusUnregisterBridgeMessage.cs" />
-    <Compile Include="Net\ByteMessageContent.cs" />
-    <Compile Include="Net\DequeueResponse.cs" />
-    <Compile Include="Net\EnqueueResponse.cs" />
-    <Compile Include="Net\INetClientQueueFactory.cs" />
-    <Compile Include="Net\MessageContent.cs" />
-    <Compile Include="Net\ResponseEnum.cs" />
-    <Compile Include="Net\ResponseResultEnum.cs" />
-    <Compile Include="Net\StringMessageContent.cs" />
-    <Compile Include="Common\IAddress.cs" />
-    <Compile Include="Messages\IAddressedMessage.cs" />
-    <Compile Include="Common\IAddressGenerator.cs" />
-    <Compile Include="Bridge\IBridgeProtocol.cs" />
-    <Compile Include="Bridge\IBridgeRegisterAddressMessage.cs" />
-    <Compile Include="Bridge\IBridgeRegisterBroadcastMessage.cs" />
-    <Compile Include="Bridge\IBridgeRegisterTypeMessage.cs" />
-    <Compile Include="Bridge\IBridgeUnregisterMessage.cs" />
-    <Compile Include="BusStop\IBusStop.cs" />
-    <Compile Include="IBusStopFactory.cs" />
-    <Compile Include="BusStop\IBusStopOn.cs" />
-    <Compile Include="BusStop\IHandlerRegistration.cs" />
-    <Compile Include="Bus\IMessageBusBase.cs" />
-    <Compile Include="Net\NetClientDequeueResult.cs" />
-    <Compile Include="Net\StreamByteReadResult.cs" />
-    <Compile Include="Net\StreamStringReadResult.cs" />
-    <Compile Include="Messages\IPrioMessage.cs" />
-    <Compile Include="IMessageBus.cs" />
-    <Compile Include="Net\INetClient.cs" />
-    <Compile Include="INetClientFactory.cs" />
-    <Compile Include="INetServer.cs" />
-    <Compile Include="Net\StreamReadResultEnum.cs" />
-    <Compile Include="Net\IClientLoadBalancing.cs" />
-    <Compile Include="Queue\IMessageSerializer.cs" />
-    <Compile Include="Net\INetNodeAddress.cs" />
-    <Compile Include="Queue\IQueueAdapterFactory.cs" />
-    <Compile Include="Queue\IQueueTail.cs" />
-    <Compile Include="Queue\messages\ICryptedMessage.cs" />
-    <Compile Include="Queue\messages\ICryptProtocol.cs" />
-    <Compile Include="Queue\messages\IEnqueueRequest.cs" />
-    <Compile Include="Queue\IQueue.cs" />
-    <Compile Include="Queue\IQueueEntry.cs" />
-    <Compile Include="Queue\IQueueExit.cs" />
-    <Compile Include="Queue\IQueueFactory.cs" />
-    <Compile Include="Messages\IRequestMessage.cs" />
-    <Compile Include="Messages\IResponseMessage.cs" />
-    <Compile Include="IBridge.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Queue\messages\IInitCryptographic.cs" />
-    <Compile Include="Queue\messages\IInitCryptographicResponse.cs" />
-    <Compile Include="Queue\messages\IQueueProtocol.cs" />
-    <Compile Include="Net\NetActionresultEnum.cs" />
-    <Compile Include="Common\TimeoutResult.cs" />
-    <Compile Include="Queue\messages\IReliableMessageProtocol.cs" />
-    <Compile Include="Queue\messages\IReliableMessageRequest.cs" />
-    <Compile Include="Queue\messages\IReliableMessageResponse.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="postbuild.bat" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>$(ProjectDir)postbuild.bat $(ProjectDir) $(ConfigurationName) $(TargetFileName)</PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

@@ -28,8 +28,6 @@ namespace TUtils.Messages.Core
 	{
 		public IBusStop BusStop { get; }
 		public IMessageBus Bus { get; }
-		public ITLog Logger { get; }
-
 		public INetServer NetServer { get; }
 
 		public InprocessQueueFactory QueueFactory { get; }
@@ -51,7 +49,6 @@ namespace TUtils.Messages.Core
 		/// If null the default is Assembly.GetEntry()
 		/// </param>
 		public ServerStandardEnvironment(
-			ILogWriter logImplementor,
 			int timeoutForLongPollingRequest,
 			params Assembly[] rootAssemblies)
 		{
@@ -59,9 +56,8 @@ namespace TUtils.Messages.Core
 			CancellationToken = CancelSource.Token;
 			QueueFactory = new InprocessQueueFactory(CancellationToken);
 			var uniqueTimeStampCreator = new UniqueTimeStampCreator();
-			Logger = new TLog(logImplementor, isLoggingOfMethodNameActivated: false);
 			var systemTime = new SystemTimeProvider();
-			var clientLoadBalancing = new ClientLoadBalancing(CancellationToken, Logger, uniqueTimeStampCreator, systemTime, maxCountOfWaitingTasks: 100);
+			var clientLoadBalancing = new ClientLoadBalancing(CancellationToken, uniqueTimeStampCreator, systemTime, maxCountOfWaitingTasks: 100);
 			IQueueEntryProtocol queueEntryProtocol = new QueueEntryProtocol();
 			IMessageBusBaseProtocol messageBusBaseProtocol = new MessageBusBaseProtocol();
 			IBridgeProtocol bridgeProtocol = new BridgeProtocol();
@@ -77,8 +73,7 @@ namespace TUtils.Messages.Core
 				queueFactory: QueueFactory,
 				cancellationToken: CancellationToken,
 				uniqueTimeStampCreator: uniqueTimeStampCreator,
-				maxCountRunningTasks: 5,
-				logger: Logger);
+				maxCountRunningTasks: 5);
 			var reliableMessageProtocol = new ReliableMessageProtocol(uniqueTimeStampCreator);
 
 			// create 
@@ -91,7 +86,6 @@ namespace TUtils.Messages.Core
 				queueEntryProtocol,
 				messageBusBaseProtocol,
 				bridgeProtocol,
-				Logger,
 				getTimeoutForLongPollingRequest: () => timeoutForLongPollingRequest);
 
 			var busStopFactory = new BusStopFactory(

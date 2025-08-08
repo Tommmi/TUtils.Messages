@@ -13,7 +13,6 @@ namespace TUtils.Messages.Core.Net
 	public class NetClientQueue : IQueueTail, IDisposable
 	{
 		private readonly IMessageSerializer _serializer;
-		private readonly ITLog _logger;
 		private readonly ISystemTimeProvider _time;
 		private INetClient _client;
 		private DateTime _lastDequeueTrial = new DateTime(0);
@@ -39,13 +38,11 @@ namespace TUtils.Messages.Core.Net
 		public NetClientQueue(
 			INetClientFactory clientFactory,
 			IMessageSerializer serializer,
-			ITLog logger,
 			ISystemTimeProvider time,
 			Uri uri, 
 			int requestRetryIntervallTimeMs)
 		{
 			_serializer = serializer;
-			_logger = logger;
 			_time = time;
 			_requestRetryIntervallTimeMs = requestRetryIntervallTimeMs;
 			_client = clientFactory.Create(uri);
@@ -59,7 +56,7 @@ namespace TUtils.Messages.Core.Net
 			if ( res == NetActionResultEnum.Succeeded)
 				return;
 
-			_logger.LogInfo(this,"message not delivered {0}", ()=>res);
+			this.Log().LogInfo(() => new { res, descr = "message not delivered" });
 		}
 
 		async Task<object> IQueueExit.Dequeue()

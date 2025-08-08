@@ -20,9 +20,6 @@ namespace TUtils.Messages.Core
 	/// </summary>
     public class Bridge
     {
-		// ReSharper disable once NotAccessedField.Local
-		private readonly ITLog _logger;
-
 		#region types
 
 		private class DummyMessageBus : IMessageBusBase
@@ -290,12 +287,11 @@ namespace TUtils.Messages.Core
 
 		#region constructor
 
-		public Bridge(ITLog logger)
+		public Bridge()
 		{
-			_logger = logger;
 			_voidBus = new DummyMessageBus();
 #pragma warning disable 4014
-			AddBus(_voidBus).LogExceptions(logger);
+			_ = AddBus(_voidBus).LogExceptions();
 #pragma warning restore 4014
 		}
 

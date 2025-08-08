@@ -18,7 +18,6 @@ namespace TUtils.Messages.Core.Net
 		private readonly Uri _baseUri;
 		private readonly INetNodeAddress _thisClientNodeAddress;
 		private readonly CancellationToken _cancellationToken;
-		private readonly ITLog _logger;
 		private HttpClient _httpClient;
 
 		#endregion
@@ -37,13 +36,11 @@ namespace TUtils.Messages.Core.Net
 			Uri baseUri, 
 			INetNodeAddress thisClientNodeAddress,
 			Action<HttpClient> additionalConfiguration, 
-			CancellationToken cancellationToken,
-			ITLog logger)
+			CancellationToken cancellationToken)
 		{
 			_baseUri = baseUri;
 			_thisClientNodeAddress = thisClientNodeAddress;
 			_cancellationToken = cancellationToken;
-			_logger = logger;
 			Start(additionalConfiguration);
 		}
 
@@ -78,7 +75,7 @@ namespace TUtils.Messages.Core.Net
 			}
 			catch (Exception e)
 			{
-				_logger.LogException(e);
+				this.Log().LogError(e:e);
 				return NetActionResultEnum.Exception;
 			}
 		}

@@ -82,39 +82,30 @@ namespace TUtils.Messages.Core.Test
 				var messageBusBaseProtocol = new MessageBusBaseProtocol();
 				var timestampCreator = new UniqueTimeStampCreator();
 				var time = new SystemTimeProvider();
-				var logger = new TLog(
-					new LogConsoleWriter(
-						LogSeverityEnum.INFO,
-						namespacesWhiteList: new List<string> { "*" },
-						namespacesBlackList: new List<string>()),
-					isLoggingOfMethodNameActivated: false);
 				var busProxy = new BusProxy(
 					queueToMessageBus.Entry,
 					queueToBusProxy.Exit,
 					messageBusBaseProtocol,
 					timestampCreator,
-					cancellationToken,
-					logger);
+					cancellationToken);
 
-				var messageBus = new MessageBus(
+				var farMessageBus = new MessageBus(
 					"bus far away",
 					queueFactory,
 					cancellationToken,
 					timestampCreator,
-					10,
-					logger);
+					10);
 				
 				var queueEntryProtocol = new QueueEntryProtocol() as IQueueEntryProtocol;
 				var bridgeProtocol = new BridgeProtocol() as IBridgeProtocol;
 				_bus2QueueAdapter = new Bus2QueueAdapter(
-					messageBus,
+					farMessageBus,
 					queueToBusProxy.Entry,
 					queueToMessageBus.Exit,
 					cancellationToken,
 					queueEntryProtocol,
 					messageBusBaseProtocol,
-					bridgeProtocol,
-					logger);
+					bridgeProtocol);
 				var addressGenerator = new AddressGenerator() as IAddressGenerator;
 
 				var bridges = new Bridge[2];
@@ -123,7 +114,7 @@ namespace TUtils.Messages.Core.Test
 
 				for (int bridgeNb = 0; bridgeNb < 2; bridgeNb++)
 				{
-					var bridge = new Bridge(logger);
+					var bridge = new Bridge();
 					bridges[bridgeNb] = bridge;
 
 					for (int busNb = 0; busNb < 2; busNb++)
@@ -133,8 +124,7 @@ namespace TUtils.Messages.Core.Test
 							queueFactory,
 							cancellationToken,
 							timestampCreator,
-							maxCountRunningTasks: 2,
-							logger:logger);
+							maxCountRunningTasks: 2);
 						localBusses[bridgeNb, busNb] = bus; 
 
 						for (int clientNb = 0; clientNb < 2; clientNb++)
@@ -151,7 +141,7 @@ namespace TUtils.Messages.Core.Test
 				}
 
 				var clientFarBus = new BusStop.BusStop().Init(
-					messageBus,
+					farMessageBus,
 					addressGenerator.Create("farClient"),
 					timestampCreator,
 					cancellationToken,
@@ -167,6 +157,12 @@ namespace TUtils.Messages.Core.Test
 			}
 
 		}
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            this.InitializeConsoleLogging(LogSeverityEnum.INFO);
+        }
 
 		[TestMethod]
 		public async Task TestBusProxy1()

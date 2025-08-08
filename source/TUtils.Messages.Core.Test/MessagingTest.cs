@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TUtils.Common.Async;
 using TUtils.Common;
+using TUtils.Common.Async;
 using TUtils.Common.Common;
 using TUtils.Common.Logging;
-using TUtils.Common.Logging.Log4Net;
+using TUtils.Common.Logging.Common;
 using TUtils.Common.Logging.LogMocs;
 using TUtils.Messages.Common;
 using TUtils.Messages.Common.BusStop;
@@ -82,7 +82,7 @@ namespace TUtils.Messages.Core.Test
 
 		#endregion
 
-		private class Environment
+		private class InprocessBusEnvironment
 		{
 			public readonly CancellationTokenSource CancellationSource;
 			public readonly CancellationToken CancellationToken;
@@ -90,19 +90,18 @@ namespace TUtils.Messages.Core.Test
 			public readonly MessageBus MessageBus;
 			public readonly IMessageBus Bus;
 			public readonly IBusStopFactory StopFactory;
-			public readonly IBusStop Client1;
-			public readonly IBusStop Client2;
+			public readonly IBusStop BusStop1;
+			public readonly IBusStop BusStop2;
 
-			public Environment()
+			public InprocessBusEnvironment()
 			{
 				var cancellationSource = new CancellationTokenSource();
 				var cancellationToken = cancellationSource.Token;
 				var queueFactory = new InprocessQueueFactory(cancellationToken);
 				var timeStampCreator = new UniqueTimeStampCreator();
 				var time = new SystemTimeProvider();
-				var logger = new TLog(new LogMocWriter(), false);
 				// var taskScheduler = TaskScheduler.Default;
-				var messageBus = new MessageBus("local bus", queueFactory, cancellationToken, timeStampCreator,10,logger);
+				var messageBus = new MessageBus("local bus", queueFactory, cancellationToken, timeStampCreator,10);
 				var bus = messageBus;
 				var addressGenerator = new AddressGenerator();
 				var busStopFactory =
@@ -115,8 +114,8 @@ namespace TUtils.Messages.Core.Test
 						time,
 						defaultTimeoutMs:20000) as IBusStopFactory;
 
-				var client1 = busStopFactory.Create("A").WaitAndGetResult(cancellationToken);
-				var client2 = busStopFactory.Create("B").WaitAndGetResult(cancellationToken);
+				var busStop1 = busStopFactory.Create("A").WaitAndGetResult(cancellationToken);
+				var busStop2 = busStopFactory.Create("B").WaitAndGetResult(cancellationToken);
 
 				CancellationSource = cancellationSource;
 				CancellationToken = cancellationToken;
@@ -124,24 +123,30 @@ namespace TUtils.Messages.Core.Test
 				MessageBus = messageBus;
 				Bus = bus;
 				StopFactory = busStopFactory;
-				Client1 = client1;
-				Client2 = client2;
+				BusStop1 = busStop1;
+				BusStop2 = busStop2;
 			}
 		}
 
-		#endregion
+        #endregion
 
-		#region Tests
+        #region Tests
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            this.InitializeConsoleLogging(LogSeverityEnum.INFO);
+        }
 
 
-		#region SendMessagesStresstest
+        #region SendMessagesStresstest
 
-		[TestMethod]
+        [TestMethod]
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public async Task SendMessagesStresstest()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 		{
-			var env = new Environment();
+			var env = new InprocessBusEnvironment();
 
 			var clients = new List<IBusStop>();
 			for (int i = 0; i < 10; i++)
@@ -164,7 +169,7 @@ namespace TUtils.Messages.Core.Test
 			env.CancellationSource.Cancel();
 		}
 
-		private void SendThread(List<IBusStop> clients, Environment env)
+		private void SendThread(List<IBusStop> clients, InprocessBusEnvironment env)
 		{
 			SendThreadAsync(clients).Wait(env.CancellationToken);
 		}
@@ -187,7 +192,7 @@ namespace TUtils.Messages.Core.Test
 		[TestMethod]
 		public async Task SendMessages()
 		{
-			var env = new Environment();
+			var env = new InprocessBusEnvironment();
 
 			bool client1FoundMsgA = false;
 			bool client1FoundMsgB = false;
@@ -204,7 +209,7 @@ namespace TUtils.Messages.Core.Test
 			var taskClient2FoundMsgA = evClient2FoundMsgA.RegisterForEvent();
 			var taskClient2FoundMsgB = evClient2FoundMsgB.RegisterForEvent();
 
-			env.Client1
+			env.BusStop1
 				.On<HelloBroadcastMessage>()
 				.IncludingMessagesToOtherBusStops()
 				.FilteredBy(msg => msg.MyFeatures == "hello ! This is client B")
@@ -218,7 +223,7 @@ namespace TUtils.Messages.Core.Test
 					await Task.Yield();
 				});
 
-			env.Client2
+			env.BusStop2
 				.On<HelloBroadcastMessage>()
 				.IncludingMessagesToOtherBusStops()
 				.Do(async (msg, cancellationToken) =>
@@ -236,8 +241,8 @@ namespace TUtils.Messages.Core.Test
 					await Task.Yield();
 				});
 
-			env.Client1.Post(new HelloBroadcastMessage(env.Client1.BusStopAddress, "hello ! This is client A"));
-			env.Client2.Post(new HelloBroadcastMessage(env.Client1.BusStopAddress, "hello ! This is client B"));
+			env.BusStop1.Post(new HelloBroadcastMessage(env.BusStop1.BusStopAddress, "hello ! This is client A"));
+			env.BusStop2.Post(new HelloBroadcastMessage(env.BusStop1.BusStopAddress, "hello ! This is client B"));
 			
 			await taskClient1FoundMsgB;
 			await taskClient2FoundMsgA;
@@ -256,7 +261,7 @@ namespace TUtils.Messages.Core.Test
 		[TestMethod]
 		public async Task Cancellation()
 		{
-			var env = new Environment();
+			var env = new InprocessBusEnvironment();
 			var messageReceived = new AsyncEvent(env.CancellationToken);
 
 			// register message handler
@@ -286,18 +291,19 @@ namespace TUtils.Messages.Core.Test
 		#region double message
 
 		[TestMethod]
-		public async Task DoubleMessage()
+        [Timeout(15000)]
+        public async Task DoubleMessage()
 		{
-			var env = new Environment();
-			var queue = env.QueueFactory.Create();
-			env.Bus.Register<HelloBroadcastMessage>(queue.Entry);
-			env.Bus.RegisterBroadcast(queue.Entry);
-			env.Client1.Post(new HelloBroadcastMessage(new Address("broadcast"), "1"));
-			env.Client1.Post(new HelloBroadcastMessage(new Address("broadcast"), "2"));
-			var msg = await queue.Exit.Dequeue() as HelloBroadcastMessage;
+			var env = new InprocessBusEnvironment();
+			var secondLocalQueue = env.QueueFactory.Create();
+			env.Bus.Register<HelloBroadcastMessage>(secondLocalQueue.Entry);
+			env.Bus.RegisterBroadcast(secondLocalQueue.Entry);
+			env.BusStop1.Post(new HelloBroadcastMessage(new Address("broadcast"), "1"));
+			env.BusStop1.Post(new HelloBroadcastMessage(new Address("broadcast"), "2"));
+			var msg = await secondLocalQueue.Exit.Dequeue() as HelloBroadcastMessage;
 			Assert.IsTrue(msg != null);
 			Assert.IsTrue(msg.MyFeatures == "1");
-			msg = await queue.Exit.Dequeue() as HelloBroadcastMessage;
+			msg = await secondLocalQueue.Exit.Dequeue() as HelloBroadcastMessage;
 			Assert.IsTrue(msg != null);
 			Assert.IsTrue(msg.MyFeatures == "2");
 

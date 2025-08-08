@@ -12,7 +12,6 @@ namespace TUtils.Messages.Core
 	{
 		private readonly string _clientUri;
 		private readonly CancellationToken _cancellationToken;
-		private readonly ITLog _logger;
 		private readonly Action<HttpClient> _additionalConfiguration;
 
 		/// <summary>
@@ -25,18 +24,16 @@ namespace TUtils.Messages.Core
 		public NetClientFactory(
 			string clientUri,
 			CancellationToken cancellationToken,
-			ITLog logger,
 			Action<HttpClient> additionalConfiguration)
 		{
 			_clientUri = clientUri;
 			_cancellationToken = cancellationToken;
-			_logger = logger;
 			_additionalConfiguration = additionalConfiguration;
 		}
 
 		INetClient INetClientFactory.Create(Uri serverAddress)
 		{
-			return new NetHttpClient(serverAddress, new NetNodeAddress(_clientUri),  _additionalConfiguration, _cancellationToken, _logger);
+			return new NetHttpClient(serverAddress, new NetNodeAddress(_clientUri),  _additionalConfiguration, _cancellationToken);
 		}
 	}
 }
