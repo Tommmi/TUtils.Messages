@@ -17,7 +17,7 @@ für JavaScript ist derzeit in Arbeit.
 `TUtils.Messages` ist Message-orientiert: Die Kommunikation erfolgt asynchron über Messages, was nichts anderes 
 sind als Klasseninstanzen, die komplett(!) serialisierbar sind. Bei der Gestaltung der .NET Implementation wurde 
 viel Wert darauf gelegt, dass man mittels des Schlüsselworts `await` flüssigen Code schreiben kann, was bei 
-asynchronen Schnitstellen nicht unbedingt selbstverständlich ist.
+asynchronen Schnittstellen nicht unbedingt selbstverständlich ist.
 
 `TUtils.Messages` ist Daten-Bus-orientiert: Alle Kommunikationsmodule registrieren sich an einem Bus und können 
 Messages senden und empfangen. 
@@ -43,17 +43,11 @@ laufenden Vorgängen.
 
 ## Programmierung
 ### Voraussetzungen
-- .NET 4.6.1
+- .NET 8.0
 - (andere Plattformen insbesondere JavaScript sind in Arbeit)
 
 ### Einbindung
-- aktuelle Version [herunterladen](https://github.com/Tommmi/TUtils.Messages/archive/master.zip).
-- entpacken
-- Folgende Assemblies in das eigene Projekt einbinden
-    - `{repository}\lib\TUtils.Common.dll`
-    - `{repository}\lib\TUtils.Messages.Common.dll`
-    - `{repository}\lib\TUtils.Messages.Core.dll`
-    - `{repository}\lib\NetSerializer.dll` (third party [library](https://github.com/tomba/netserializer))
+- NuGet Paket TUtils2.Messages.Core
 
 
 ### Lokalen Bus erzeugen
@@ -64,8 +58,6 @@ ist folgende:
 var logger = new Log4NetWriter();
 var simpleMessageEnvironment = new LocalBusEnvironment(logger);
 ```
-In diesem Fall muss man auch das Assembly
-    - `{repository}\lib\log4net.dll` einbinden
 
 Natürlich kann man auch andere Logger verwenden:
 ``` CSharp

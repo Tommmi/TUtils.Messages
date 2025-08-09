@@ -18,16 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="NetSerializer" Version="4.1.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\TUtils.Messages.Common\TUtils.Messages.Common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="TUtils.Common">
-      <HintPath>..\external\TUtils.Common\TUtils.Common.dll</HintPath>
-    </Reference>
+    <PackageReference Include="TUtils2.Messages.Common" Version="0.0.1" />
   </ItemGroup>
 
 </Project>

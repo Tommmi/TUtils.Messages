@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -26,11 +26,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\TUtils.Messages.Common\TUtils.Messages.Common.csproj" />
-    <ProjectReference Include="..\TUtils.Messages.Core\TUtils.Messages.Core.csproj" />
+    <PackageReference Include="TUtils2.Messages.Core" Version="0.0.1" />
   </ItemGroup>
 
 </Project>
