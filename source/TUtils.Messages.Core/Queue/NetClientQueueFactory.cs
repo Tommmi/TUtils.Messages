@@ -12,7 +12,6 @@ namespace TUtils.Messages.Core.Queue
 	{
 		private readonly INetClientFactory _netClientFactory;
 		private readonly IMessageSerializer _serializer;
-		private readonly ITLog _logger;
 		private readonly ISystemTimeProvider _time;
 		private readonly int _requestRetryIntervallTimeMs;
 
@@ -32,20 +31,18 @@ namespace TUtils.Messages.Core.Queue
 		public NetClientQueueFactory(
 			INetClientFactory netClientFactory,
 			IMessageSerializer serializer,
-			ITLog logger,
 			ISystemTimeProvider time,
 			int requestRetryIntervallTimeMs)
 		{
 			_netClientFactory = netClientFactory;
 			_serializer = serializer;
-			_logger = logger;
 			_time = time;
 			_requestRetryIntervallTimeMs = requestRetryIntervallTimeMs;
 		}
 
 		public IQueueTail CreateQueue(Uri serverAddress)
 		{
-			return new NetClientQueue(_netClientFactory,_serializer,_logger,_time, serverAddress, _requestRetryIntervallTimeMs);
+			return new NetClientQueue(_netClientFactory,_serializer,_time, serverAddress, _requestRetryIntervallTimeMs);
 		}
 	}
 }

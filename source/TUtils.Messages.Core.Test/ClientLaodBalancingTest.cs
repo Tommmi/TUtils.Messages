@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TUtils.Common.Async;
+using TUtils.Common.Logging;
 using TUtils.Common.Logging.Common;
 using TUtils.Common.Logging.LogMocs;
 using TUtils.Messages.Common;
@@ -35,15 +36,16 @@ namespace TUtils.Messages.Core.Test
 			}
 		}
 
+        [TestInitialize]
+        public void Initialize()
+        {
+            this.InitializeConsoleLogging(LogSeverityEnum.INFO);
+        }
+
 		[TestMethod]
 		public async Task TestClientLoadBalancing1()
 		{
-			var logWriter = new LogConsoleWriter(
-				LogSeverityEnum.INFO,
-				namespacesWhiteList:new List<string>(), 
-				namespacesBlackList:new List<string>());
 			var env = new ServerStandardEnvironment(
-				logWriter, 
 				timeoutForLongPollingRequest:2000, 
 				rootAssemblies:Assembly.GetAssembly(GetType()));
 
@@ -75,7 +77,6 @@ namespace TUtils.Messages.Core.Test
 				"simulator",
 				env.CancellationToken,
 				ThreadPriority.Normal,
-				env.Logger,
 				synchronousThreadMethod: cancel =>
 				{
 					while (true)
@@ -95,7 +96,7 @@ namespace TUtils.Messages.Core.Test
 
 			await serverSimulator.WaitForStart();
 			await serverSimulator.WaitForTermination();
-			env.Logger.LogInfo(this,"end of test");
+			this.Log().LogInfo(() =>new { descr = "end of test" });
 		}
 
 		private static void EnqueueNewTestMessage(

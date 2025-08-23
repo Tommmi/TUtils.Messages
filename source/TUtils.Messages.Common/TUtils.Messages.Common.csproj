@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TUtils2.Common" Version="0.0.2" />
+    <PackageReference Include="TUtils2.Common" Version="0.0.17" />
   </ItemGroup>
 
 </Project>

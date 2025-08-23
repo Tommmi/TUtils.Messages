@@ -33,7 +33,6 @@ namespace TUtils.Messages.Core
 		private readonly IQueueEntryProtocol _queueEntryProtocol;
 		private readonly IMessageBusBaseProtocol _messageBusBaseProtocol;
 		private readonly IBridgeProtocol _bridgeProtocol;
-		private readonly ITLog _logger;
 		private readonly object _sync = new object();
 
 		#endregion
@@ -66,7 +65,6 @@ namespace TUtils.Messages.Core
 			IQueueEntryProtocol queueEntryProtocol,
 			IMessageBusBaseProtocol messageBusBaseProtocol,
 			IBridgeProtocol bridgeProtocol,
-			ITLog logger,
 			Func<int> getTimeoutForLongPollingRequest)
 		{
 			_clientLoadBalancing = clientLoadBalancing;
@@ -78,7 +76,6 @@ namespace TUtils.Messages.Core
 			_queueEntryProtocol = queueEntryProtocol;
 			_messageBusBaseProtocol = messageBusBaseProtocol;
 			_bridgeProtocol = bridgeProtocol;
-			_logger = logger;
 		}
 
 		#endregion
@@ -117,8 +114,7 @@ namespace TUtils.Messages.Core
 							_cancellationToken,
 							_queueEntryProtocol,
 							_messageBusBaseProtocol,
-							_bridgeProtocol,
-							_logger));
+							_bridgeProtocol));
 					_queues.Insert(queueInfo);
 				}
 				return queueInfo;

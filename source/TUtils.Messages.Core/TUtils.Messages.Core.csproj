@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -17,8 +17,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NetSerializer" Version="4.1.1" />
-    <PackageReference Include="TUtils2.Messages.Common" Version="0.0.1" />
+    <PackageReference Include="NetSerializer" Version="4.1.2" />
+    <PackageReference Include="TUtils2.Messages.Common" Version="0.0.5" />
   </ItemGroup>
 
 </Project>

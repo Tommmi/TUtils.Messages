@@ -19,7 +19,6 @@ namespace TUtils.Messages.Core
 		private readonly INetServer _netServer;
 		private readonly int _listenPort;
 		private readonly CancellationToken _cancellationToken;
-		private readonly ITLog _logger;
 		private CancellationTokenRegistration? _cancellationRegistration;
 		private HttpListener _httpListener;
 		private Task _serverTask;
@@ -27,20 +26,18 @@ namespace TUtils.Messages.Core
 		public SimpleHttpServer(
 			INetServer netServer,
 			CancellationToken cancellationToken,
-			ITLog logger,
 			int listenPort
 			)
 		{
 			_netServer = netServer;
 			_listenPort = listenPort;
 			_cancellationToken = cancellationToken;
-			_logger = logger;
 		}
 
 		// ReSharper disable once UnusedMember.Global
 		public void Start()
 		{
-			_serverTask = ServerThread(_cancellationToken, _netServer, _logger).LogExceptions(_logger);
+			_serverTask = ServerThread(_cancellationToken, _netServer).LogExceptions();
 		}
 
 		public Task WaitForTermination()
@@ -58,7 +55,7 @@ namespace TUtils.Messages.Core
 			_httpListener = null;
 		}
 
-		private async Task ServerThread(CancellationToken cancellationToken, INetServer netServer, ITLog logger)
+		private async Task ServerThread(CancellationToken cancellationToken, INetServer netServer)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			foreach (var serverDomain in new[] { "*", "localhost" })
@@ -78,27 +75,26 @@ namespace TUtils.Messages.Core
 
 							var context = await _httpListener.GetContextAsync();
 #pragma warning disable 4014
-							HandleRequest(netServer, context).LogExceptions(logger);
+							HandleRequest(netServer, context).LogExceptions();
 #pragma warning restore 4014
 						}
 					}
 					catch (HttpListenerException e) when (e.Message == "Access is denied" && serverDomain == "*")
 					{
-						_logger.Log(LogSeverityEnum.WARNING, this,
-							"you must run program with admin rights, if you want to receive requests from other computers than this one !");
+						this.Log().LogWarn(() => new { desrc = "you must run program with admin rights, if you want to receive requests from other computers than this one !" });
 					}
 					catch (HttpListenerException e)
 					{
-						_logger.LogException(e);
+						this.Log().LogError(e: e);
 					}
 					catch (Exception e)
 					{
 						if (cancellationToken.IsCancellationRequested)
 						{
-							_logger.LogInfo(this, "server task canceled (source code tag j92hflssaej)");
+							this.Log().LogInfo(() => new { descr = "server task canceled (source code tag j92hflssaej)" });
 							return;
 						}
-						_logger.LogException(e);
+                        this.Log().LogError(e: e);
 						throw;
 					}
 				}

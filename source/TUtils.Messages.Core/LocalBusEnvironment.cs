@@ -18,7 +18,6 @@ namespace TUtils.Messages.Core
 	{
 		public IBusStop BusStop { get; }
 		public CancellationTokenSource CancelSource { get; }
-		public ITLog Logger { get; }
 
 
 		public IMessageBus Bus { get; }
@@ -28,14 +27,12 @@ namespace TUtils.Messages.Core
 		public IQueueFactory InprocessQueueFactory { get; }
 		public IUniqueTimeStampCreator UniqueTimeStampCreator { get; }
 
-		public LocalBusEnvironment(
-			ILogWriter logImplementor)
+		public LocalBusEnvironment()
 		{
 			var cancelSource = new CancellationTokenSource();
 			var cancellationToken = cancelSource.Token;
 			var queueFactory = new InprocessQueueFactory(cancellationToken);
 			var uniqueTimeStampCreator = new UniqueTimeStampCreator();
-			var logger = new TLog(logImplementor, isLoggingOfMethodNameActivated: false);
 
 			// create message bus
 			var bus = new MessageBus(
@@ -43,8 +40,7 @@ namespace TUtils.Messages.Core
 				queueFactory: queueFactory,
 				cancellationToken: cancellationToken,
 				uniqueTimeStampCreator: uniqueTimeStampCreator,
-				maxCountRunningTasks: 5,
-				logger: logger);
+				maxCountRunningTasks: 5);
 
 			var addressGenerator = new AddressGenerator();
 			var systemTime = new SystemTimeProvider();
@@ -63,7 +59,6 @@ namespace TUtils.Messages.Core
 
 			CancelSource = cancelSource;
 			InprocessQueueFactory = queueFactory;
-			Logger = logger;
 			Bus = bus;
 			AddressGenerator = addressGenerator;
 			SystemTime = systemTime;

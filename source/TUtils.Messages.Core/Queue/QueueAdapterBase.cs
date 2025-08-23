@@ -28,13 +28,11 @@ namespace TUtils.Messages.Core.Queue
 		#region constructor
 
 		protected QueueAdapterBase(
-			ITLog logger,
 			IQueueFactory queueFactory,
 			IQueueEntry queueEntry,
 			IQueueExit queueExit,
 			CancellationToken cancellationToken)
 		{
-			Logger = logger;
 			QueueEntry = queueEntry;
 			QueueExit = queueExit;
 			_queueOutBuffer = queueFactory.Create();
@@ -42,7 +40,7 @@ namespace TUtils.Messages.Core.Queue
 			_cancellationRegistration = cancellationToken.Register(OnCancel);
 
 #pragma warning disable 4014
-			Run().LogExceptions(logger);
+			Run().LogExceptions();
 #pragma warning restore 4014
 		}
 
@@ -71,7 +69,7 @@ namespace TUtils.Messages.Core.Queue
 					actionOnReceiving(msg);
 
 #pragma warning disable 4014
-				DequeueHook(msg).LogExceptions(Logger);
+				DequeueHook(msg).LogExceptions();
 #pragma warning restore 4014
 			}
 		}
@@ -117,7 +115,7 @@ namespace TUtils.Messages.Core.Queue
 			if (timeoutMs > 0)
 			{
 #pragma warning disable 4014
-				StartTimer(timeoutMs, onMessage, onCancel, tcs, actionsOnMessage).LogExceptions(Logger);
+				StartTimer(timeoutMs, onMessage, onCancel, tcs, actionsOnMessage).LogExceptions();
 #pragma warning restore 4014
 			}
 
@@ -173,8 +171,6 @@ namespace TUtils.Messages.Core.Queue
 
 		#region protected
 
-		// ReSharper disable once MemberCanBePrivate.Global
-		protected ITLog Logger { get; }
 		// ReSharper disable once MemberCanBePrivate.Global
 		protected IQueueEntry QueueEntry { get; }
 		// ReSharper disable once MemberCanBePrivate.Global
@@ -315,7 +311,7 @@ namespace TUtils.Messages.Core.Queue
 				action(msg);
 
 #pragma warning disable 4014
-			EnqueueHook(msg).LogExceptions(Logger);
+			EnqueueHook(msg).LogExceptions();
 #pragma warning restore 4014
 			return Task.CompletedTask;
 		}

@@ -26,7 +26,6 @@ namespace TUtils.Messages.Core.Bus
 		private readonly IQueueExit _queueToBusProxy;
 		private readonly IMessageBusBaseProtocol _messageBusBaseProtocol;
 		private readonly IUniqueTimeStampCreator _uniqueTimeStampCreator;
-		private readonly ITLog _logger;
 		/// <summary>
 		/// ({registration id, self-generated queue id, registered queue for handling messages)
 		/// </summary>
@@ -50,17 +49,15 @@ namespace TUtils.Messages.Core.Bus
 			IQueueExit queueToBusProxy,
 			IMessageBusBaseProtocol messageBusBaseProtocol,
 			IUniqueTimeStampCreator uniqueTimeStampCreator,
-			CancellationToken cancellationToken,
-			ITLog logger)
+			CancellationToken cancellationToken)
 		{
 			_queueToMessageBus = queueToMessageBus;
 			_queueToBusProxy = queueToBusProxy;
 			_messageBusBaseProtocol = messageBusBaseProtocol;
 			_uniqueTimeStampCreator = uniqueTimeStampCreator;
-			_logger = logger;
 			_cancellationRegistration = cancellationToken.Register(OnCancel);
 #pragma warning disable 4014
-			Run().LogExceptions(logger);
+			Run().LogExceptions();
 #pragma warning restore 4014
 		}
 
@@ -70,20 +67,13 @@ namespace TUtils.Messages.Core.Bus
 
 		private void LogMessage(object msg)
 		{
-			if (_logger.IsActive(LogSeverityEnum.INFO, this))
+			this.Log().LogInfo(map: () => new
 			{
-				string loggingText = $"message {msg.GetType().Name}";
-
-				var message = msg as IAddressedMessage;
-				if (message != null)
-				{
-					loggingText += $" source:{message.Source}, destination:{message.Destination}";
-				}
-				loggingText += $" content:{msg}";
-				_logger.LogInfo(this, loggingText);
-			}
+				msgType = msg.GetType().Name,
+				msgSource = (msg as IAddressedMessage)?.Source.ToString() ?? "",
+				destination = (msg as IAddressedMessage)?.Destination.ToString() ?? ""
+			});
 		}
-
 
 		private async Task Run()
 		{

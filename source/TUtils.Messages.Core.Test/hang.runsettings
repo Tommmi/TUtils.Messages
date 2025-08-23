@@ -1,0 +1,12 @@
+<RunSettings>
+  <RunConfiguration>
+    <TargetFrameworkVersion>.NETCoreApp,Version=v8.0</TargetFrameworkVersion>
+    <DisableAppDomain>True</DisableAppDomain>
+    <MaxCpuCount>1</MaxCpuCount> <!-- keine Parallelität, vermeidet Deadlocks -->
+  </RunConfiguration>
+  <Blame>
+    <CollectDump AlwaysCollect="true" DumpType="Full" />
+    <HangDump>True</HangDump>
+    <DumpType>Full</DumpType>
+  </Blame>
+</RunSettings>

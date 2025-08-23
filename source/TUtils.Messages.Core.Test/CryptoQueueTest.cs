@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
+using TUtils.Common.Logging;
 using TUtils.Common.Logging.Common;
 using TUtils.Common.Logging.LogMocs;
 using TUtils.Common.Security.Asymmetric;
@@ -20,40 +21,35 @@ namespace TUtils.Messages.Core.Test
 	[TestClass]
 	public class CryptoQueueTest
 	{
-		//[TestMethod]
-		//public async Task TestCryptoQueue1()
-		//{
-		//	var logger = new LogConsole(
-		//		LogSeverityEnum.WARNING,
-		//		namespacesWhiteList: new List<string> { "*" },
-		//		namespacesBlackList: new List<string>());
-		//	var env = new ClientStandardEnvironment(
-		//		logger,
-		//		clientUri: "gerlach-it.de/client1",
-		//		additionalConfiguration: null,
-		//		requestRetryIntervallTimeMs: 1000,
-		//		rootAssemblies: Assembly.GetAssembly(GetType()));
-		//	var certificateVerifier = new CertificateVerifier(env.SystemTime);
-		//	var certificateProvider = new CertificateProvider() as ICertificateProvider;
-		//	var cer1 = certificateProvider.GetPublicCertificateFromWindowsStorage(subjectName: "CER_1");
-		//	var cer1Base64 = cer1.GetPrivateCertificateFromWindowsStorage().ToBase64String().Content;
-		//	Assert.IsTrue(cer1 != null);
-		//	var cer2 = certificateProvider.GetPublicCertificateFromWindowsStorage(subjectName: "CER_2");
-		//	Assert.IsTrue(cer2 != null);
+        //[TestMethod]
+        //public async Task TestCryptoQueue1()
+        //{
+        //	var env = new ClientStandardEnvironment(
+        //		clientUri: "gerlach-it.de/client1",
+        //		additionalConfiguration: null,
+        //		requestRetryIntervallTimeMs: 1000,
+        //		rootAssemblies: Assembly.GetAssembly(GetType()));
+        //	var certificateVerifier = new CertificateVerifier(env.SystemTime);
+        //	var certificateProvider = new CertificateProvider() as ICertificateProvider;
+        //	var cer1 = certificateProvider.GetPublicCertificateFromWindowsStorage(subjectName: "CER_1");
+        //	var cer1Base64 = cer1.GetPrivateCertificateFromWindowsStorage().ToBase64String().Content;
+        //	Assert.IsTrue(cer1 != null);
+        //	var cer2 = certificateProvider.GetPublicCertificateFromWindowsStorage(subjectName: "CER_2");
+        //	Assert.IsTrue(cer2 != null);
 
-		//	await TestCryptQueueInternal(env, certificateVerifier, cer1, cer2);
-		//}
+        //	await TestCryptQueueInternal(env, certificateVerifier, cer1, cer2);
+        //}
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            this.InitializeConsoleLogging(LogSeverityEnum.INFO);
+        }
 
 		[TestMethod]
-		[Ignore("Disabled due to .NET 8.0 incompatibility with TUtils.Common RSA implementation. RSABCrypt cannot be cast to RSACryptoServiceProvider in .NET 8.0.")]
 		public async Task TestCryptoQueue2()
 		{
-			var logger = new LogConsoleWriter(
-				LogSeverityEnum.WARNING,
-				namespacesWhiteList: new List<string> { "*" },
-				namespacesBlackList: new List<string>());
 			var env = new ClientStandardEnvironment(
-				logger,
 				clientUri: "gerlach-it.de/client1",
 				additionalConfiguration: null,
 				diconnectedRetryIntervallTimeMs: 1000,
@@ -153,7 +149,6 @@ namespace TUtils.Messages.Core.Test
 			var symmetricCryptProvider = new SymmetricCryptProvider();
 
 			var queueTailLeft = new CryptoQueueAdapter(
-				logger: env.Logger,
 				queueFactory: env.QueueFactory,
 				queueEntry: queueRight.Entry,
 				queueExit: queueLeft.Exit,
@@ -166,7 +161,6 @@ namespace TUtils.Messages.Core.Test
 				timeoutMs: 4000) as IQueueTail;
 
 			var queueTailRight = new CryptoQueueAdapter(
-				logger: env.Logger,
 				queueFactory: env.QueueFactory,
 				queueEntry: queueLeft.Entry,
 				queueExit: queueRight.Exit,

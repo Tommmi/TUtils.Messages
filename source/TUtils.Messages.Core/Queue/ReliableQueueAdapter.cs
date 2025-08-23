@@ -27,14 +27,13 @@ namespace TUtils.Messages.Core.Queue
 		#region constructor
 
 		public ReliableQueueAdapterBase(
-			ITLog logger,
 			IQueueEntry queueEntry,
 			IQueueExit queueExit,
 			int timeout,
 			IQueueFactory queueFactory,
 			IUniqueTimeStampCreator uniqueTimeStampCreator,
 			IReliableMessageProtocol reliableMessageProtocol,
-			CancellationToken cancellationToken) : base(logger,queueFactory,queueEntry,queueExit,cancellationToken)
+			CancellationToken cancellationToken) : base(queueFactory,queueEntry,queueExit,cancellationToken)
 		{
 			_timeout = timeout;
 			_firstTimeoutMs = 100;

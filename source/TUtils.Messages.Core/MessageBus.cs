@@ -110,7 +110,6 @@ namespace TUtils.Messages.Core
 		private readonly CancellationToken _cancellationToken;
 		private readonly IUniqueTimeStampCreator _uniqueTimeStampCreator;
 		private readonly int _maxCountRunningTasks;
-		private readonly ITLog _logger;
 		private readonly IQueue _inputQueue;
 		private readonly AsyncEvent _evIsIdle;
 
@@ -155,19 +154,17 @@ namespace TUtils.Messages.Core
 			IQueueFactory queueFactory, 
 			CancellationToken cancellationToken,
 			IUniqueTimeStampCreator uniqueTimeStampCreator,
-			int maxCountRunningTasks,
-			ITLog logger)
+			int maxCountRunningTasks)
 		{
 			_cancellationToken = cancellationToken;
 			_uniqueTimeStampCreator = uniqueTimeStampCreator;
 			_maxCountRunningTasks = maxCountRunningTasks;
-			_logger = logger;
 			_runningTasks = new List<Task>();
 			_busName = busName;
 			_inputQueue = queueFactory.Create();
 			_evIsIdle = new AsyncEvent(cancellationToken);
 			_sameHandlerComparer = new SameHandlerComparer();
-			_runTask = Task.Run(()=>Run().LogExceptions(logger),cancellationToken);
+			_runTask = Task.Run(()=>Run().LogExceptions(),cancellationToken);
 		}
 
 		#endregion
@@ -213,11 +210,11 @@ namespace TUtils.Messages.Core
 
 					var handler = registeredhandler.Item5;
 					if (handler != null)
-						StoreRunningTask(Task.Run(() => handler(msg).LogExceptions(_logger), _cancellationToken));
+						StoreRunningTask(Task.Run(() => handler(msg).LogExceptions(), _cancellationToken));
 
 					var handler2 = registeredhandler.Item6;
 					if (handler2 != null)
-						StoreRunningTask(Task.Run(() => handler2(msg as IAddressedMessage).LogExceptions(_logger), _cancellationToken));
+						StoreRunningTask(Task.Run(() => handler2(msg as IAddressedMessage).LogExceptions(), _cancellationToken));
 				}
 			}
 			// ReSharper disable once FunctionNeverReturns
@@ -225,19 +222,12 @@ namespace TUtils.Messages.Core
 
 		private void LogMessage(object msg)
 		{
-			if (_logger.IsActive(LogSeverityEnum.INFO, this))
-			{
-				string loggingText = $"bus {_busName}: message {msg.GetType().Name}";
-
-				var message = msg as IAddressedMessage;
-				if (message != null)
-				{
-					loggingText += $" source:{message.Source}, destination:{message.Destination}";
-				}
-
-				loggingText += $" content:{msg}";
-				_logger.LogInfo(this, loggingText);
-			}
+			this.Log().LogInfo(() => new {
+                                            bus = _busName,
+                                            source = (msg as IAddressedMessage)?.Source.ToString(),
+                                            destination = (msg as IAddressedMessage)?.Destination.ToString(),
+                                            content = msg.SerializeByTUtils()
+                                          });
 		}
 
 		private void StoreRunningTask(Task task)

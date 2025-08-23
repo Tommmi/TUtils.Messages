@@ -22,21 +22,16 @@ namespace TUtils.Messages.Core.Test
 		[TestMethod]
 		public async Task TestNetClient1()
 		{
-			var logImpl = new LogConsoleWriter(
-				LogSeverityEnum.ERROR,
-				namespacesWhiteList: new List<string> {"*"},
-				namespacesBlackList: new List<string>());
-			var logger = new TLog(logImpl, isLoggingOfMethodNameActivated: false);
 			var cancellationSource = new CancellationTokenSource();
 			var cancellationToken = cancellationSource.Token;
 			var netClient = new NetHttpClient(
 				baseUri: new Uri("http://localhost:8097"),
 				thisClientNodeAddress: new NetNodeAddress("client"),
 				additionalConfiguration: null,
-				cancellationToken: cancellationToken,
-				logger: logger) as INetClient;
+				cancellationToken: cancellationToken
+				) as INetClient;
 #pragma warning disable 4014
-			StartServerTask(cancellationToken).LogExceptions(logger);
+			StartServerTask(cancellationToken).LogExceptions();
 #pragma warning restore 4014
 			var res = await netClient.Enqueue(new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0});
 			Assert.IsTrue(res == NetActionResultEnum.Succeeded);
@@ -74,18 +69,20 @@ namespace TUtils.Messages.Core.Test
 
 		}
 
+        [TestInitialize]
+        public void Initialize()
+        {
+            this.InitializeConsoleLogging(LogSeverityEnum.INFO);
+        }
+
 		[TestMethod]
 		public async Task TestNetClient2()
 		{
-			var logWriter = new LogConsoleWriter(
-				LogSeverityEnum.ERROR,
-				namespacesWhiteList: new List<string> {"*"},
-				namespacesBlackList: new List<string>());
+			this.InitializeConsoleLogging(LogSeverityEnum.ERROR);
 			var rootAssembly = Assembly.GetAssembly(GetType());
-			var envServer = new ServerStandardEnvironment(logWriter, timeoutForLongPollingRequest: 2000,
+			var envServer = new ServerStandardEnvironment(timeoutForLongPollingRequest: 2000,
 				rootAssemblies: rootAssembly);
 			var envClient = new ClientStandardEnvironment(
-				logWriter,
 				clientUri: "Thomas",
 				additionalConfiguration: null,
 				diconnectedRetryIntervallTimeMs: 30 * 1000,
@@ -96,7 +93,6 @@ namespace TUtils.Messages.Core.Test
 				var httpServerTask = new SimpleHttpServer(
 					envServer.NetServer,
 					envServer.CancellationToken,
-					envServer.Logger,
 					listenPort: 8097);
 				httpServerTask.Start();
 
@@ -121,7 +117,7 @@ namespace TUtils.Messages.Core.Test
 			}
 			catch (Exception e)
 			{
-				envServer.Logger.LogException(e);
+				this.Log().LogError(e: e);
 				Assert.IsTrue(
 					envServer.CancellationToken.IsCancellationRequested
 					|| envClient.CancellationToken.IsCancellationRequested);
@@ -136,15 +132,10 @@ namespace TUtils.Messages.Core.Test
 		[TestMethod]
 		public async Task TestLongPolling()
 		{
-			var logWriter = new LogConsoleWriter(
-				LogSeverityEnum.ERROR,
-				namespacesWhiteList: new List<string> { "*" },
-				namespacesBlackList: new List<string>());
 			var rootAssembly = Assembly.GetAssembly(GetType());
-			var envServer = new ServerStandardEnvironment(logWriter, timeoutForLongPollingRequest: 2*60*1000,
+			var envServer = new ServerStandardEnvironment(timeoutForLongPollingRequest: 2*60*1000,
 				rootAssemblies: rootAssembly);
 			var envClient = new ClientStandardEnvironment(
-				logWriter,
 				clientUri: "Thomas",
 				additionalConfiguration: null,
 				diconnectedRetryIntervallTimeMs: 30 * 1000,
@@ -155,7 +146,6 @@ namespace TUtils.Messages.Core.Test
 				var httpServerTask = new SimpleHttpServer(
 					envServer.NetServer,
 					envServer.CancellationToken,
-					envServer.Logger,
 					listenPort: 8097);
 				httpServerTask.Start();
 
@@ -209,7 +199,7 @@ namespace TUtils.Messages.Core.Test
 			}
 			catch (Exception e)
 			{
-				envServer.Logger.LogException(e);
+				this.Log().LogError(e: e);
 				Assert.IsTrue(
 					envServer.CancellationToken.IsCancellationRequested
 					|| envClient.CancellationToken.IsCancellationRequested);
